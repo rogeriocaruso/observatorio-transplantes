@@ -82,13 +82,64 @@ header .badge{margin-left:auto;background:var(--ouro);color:var(--primary);font-
 .kbar{background:#f0f4ef;border-top:1px solid var(--border);padding:5px 28px;font-size:11px;color:#666;display:flex;gap:16px;flex-wrap:wrap}
 .kbar span{display:flex;align-items:center;gap:4px}
 kbd{background:#f0f0f0;border:1px solid #ccc;border-radius:3px;padding:1px 4px;font-size:10px;font-family:monospace;color:#555}
+
+/* ── MODAL ───────────────────────────────────────────────── */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:300;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-bg.open{opacity:1;pointer-events:all}
+.modal{background:#fff;border-radius:10px;width:min(820px,95vw);max-height:88vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.3);transform:translateY(16px);transition:transform .2s}
+.modal-bg.open .modal{transform:translateY(0)}
+.modal-hd{background:var(--primary);color:#fff;padding:14px 20px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.modal-hd h2{font-family:'Montserrat',sans-serif;font-size:14px;font-weight:800}
+.modal-hd .close{margin-left:auto;background:none;border:none;color:#fff;font-size:20px;cursor:pointer;opacity:.7;line-height:1}
+.modal-hd .close:hover{opacity:1}
+.modal-body{padding:18px 20px;overflow-y:auto;flex:1}
+.modal-ft{padding:12px 20px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:center;flex-shrink:0;background:#fafafa}
+
+/* Drop zone */
+.dropzone{border:2px dashed var(--border);border-radius:8px;padding:32px;text-align:center;cursor:pointer;transition:all .2s;background:#fafffe}
+.dropzone:hover,.dropzone.over{border-color:var(--verde);background:#f0fff4}
+.dropzone p{font-size:13px;color:#666;margin-top:8px}
+.dropzone .icon{font-size:36px}
+
+/* Preview table */
+.prev-wrap{overflow-x:auto;max-height:300px;border:1px solid var(--border);border-radius:6px;margin-top:12px}
+.prev-wrap table{border-collapse:collapse;font-size:11px;width:100%}
+.prev-wrap th{background:var(--primary);color:#fff;padding:5px 8px;text-align:left;position:sticky;top:0;white-space:nowrap}
+.prev-wrap td{padding:4px 8px;border-bottom:1px solid #f0f0f0;white-space:nowrap;max-width:160px;overflow:hidden;text-overflow:ellipsis}
+.prev-wrap tr:nth-child(even) td{background:#f8f8f8}
+
+/* Status tags */
+.stag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600}
+.stag.ok{background:#d4edda;color:#1e6b2e}
+.stag.warn{background:#fff3cd;color:#856404}
+.stag.err{background:#f8d7da;color:#9b1c1c}
+
+/* Info grid */
+.info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:14px}
+.info-card{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px 12px}
+.info-card .v{font-family:'Montserrat',sans-serif;font-size:22px;font-weight:800;color:var(--verde)}
+.info-card .l{font-size:11px;color:#666;margin-top:2px}
+
+/* Progress de upload */
+.up-bar-wrap{background:#e9ecef;border-radius:4px;height:8px;overflow:hidden;margin:8px 0}
+.up-bar{height:100%;background:var(--verde);transition:width .3s;border-radius:4px}
+.up-log{font-size:11px;color:#555;max-height:120px;overflow-y:auto;background:#f8f8f8;border:1px solid var(--border);border-radius:4px;padding:8px;font-family:monospace;margin-top:8px}
+
+/* Painel banco */
+.db-panel{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:10px 12px;font-size:11px}
+.db-panel .db-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+.db-panel .db-row:last-child{border-bottom:none}
+.db-panel .db-n{font-family:'Montserrat',sans-serif;font-size:16px;font-weight:800;color:var(--ouro)}
+
+/* input file oculto */
+#csv-file-input{display:none}
 </style>
 </head>
 <body>
 <header>
   <div class="inst">
     <strong>Observatório de Transplantes — CET-RS</strong>
-    Governo do Estado do Rio Grande do Sul · Secretaria da Saúde · Divisão de Transplantes
+    Governo do Estado do Rio Grande do Sul · Secretaria da Saúde · Departamento de Regulação Estadual · Divisão de Transplantes
   </div>
   <div class="badge">QVTX · Entrada de Dados</div>
 </header>
@@ -104,18 +155,62 @@ kbd{background:#f0f0f0;border:1px solid #ccc;border-radius:3px;padding:1px 4px;f
   <div class="prog-wrap"><div class="prog-bar" id="pbar" style="width:0%"></div></div></div>
   <hr>
   <h3>Supabase</h3>
-  <div class="cfg"><label>URL do projeto</label><input type="text" id="sburl" placeholder="https://xxx.supabase.co"></div>
-  <div class="cfg"><label>anon key</label><input type="text" id="sbkey" placeholder="eyJh..."></div>
+  <div class="cfg"><label>URL do projeto</label><input type="text" id="sburl" placeholder="https://xxx.supabase.co" oninput="autoSaveCreds()"></div>
+  <div class="cfg"><label>anon key</label><input type="password" id="sbkey" placeholder="eyJh..." oninput="autoSaveCreds()"></div>
+  <div style="display:flex;align-items:center;gap:6px;font-size:11px;opacity:.8;margin-top:2px">
+    <input type="checkbox" id="chk-lembrar" onchange="toggleLembrar()" style="cursor:pointer">
+    <label for="chk-lembrar" style="cursor:pointer;opacity:1">Lembrar neste navegador</label>
+  </div>
   <button class="bsm b-con" onclick="testConn()">Testar conexão</button>
   <div id="cst"><span class="sdot doff"></span>Não configurado</div>
+  <div class="cfg" style="margin-top:4px"><label>Operador</label><input type="text" id="opname" placeholder="ex: MLS" style="text-transform:uppercase" oninput="autoSaveCreds()"></div>
   <hr>
   <h3>Ações</h3>
   <button class="bsm b-new" onclick="newRec()">＋ Novo registro</button>
-  <button class="bsm b-exp" onclick="exportCSV()">⬇ Exportar CSV</button>
+  <button class="bsm" style="background:#7b3fa0;color:#fff" onclick="openImport()">⬆ Importar CSV</button>
+  <button class="bsm b-exp" onclick="exportCSV()">⬇ Exportar CSV sessão</button>
   <hr>
-  <h3>Operador</h3>
-  <div class="cfg"><label>Nome / iniciais</label><input type="text" id="opname" placeholder="ex: MLS" style="text-transform:uppercase"></div>
+  <h3>Banco local</h3>
+  <div class="db-panel" id="db-panel">
+    <div class="db-row"><span>Adultos</span><span class="db-n" id="db-adultos">0</span></div>
+    <div class="db-row"><span>5–17 anos</span><span class="db-n" id="db-5_17">0</span></div>
+    <div class="db-row"><span>2–4 anos</span><span class="db-n" id="db-2_4">0</span></div>
+    <div class="db-row" style="margin-top:4px"><span style="opacity:.7">Total</span><span class="db-n" id="db-total" style="color:#fff">0</span></div>
+  </div>
+  <button class="bsm b-exp" onclick="exportCSVAll()" style="margin-top:2px">⬇ Exportar banco completo</button>
 </aside>
+
+<!-- INPUT FILE OCULTO -->
+<input type="file" id="csv-file-input" accept=".csv" multiple onchange="onFileSelected(event)">
+
+<!-- MODAL IMPORTAÇÃO -->
+<div class="modal-bg" id="modal-bg" onclick="closeImportOutside(event)">
+  <div class="modal">
+    <div class="modal-hd">
+      <span style="font-size:18px">⬆</span>
+      <h2>Importar CSV para o banco</h2>
+      <button class="close" onclick="closeImport()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body">
+      <div class="dropzone" id="dropzone"
+        onclick="document.getElementById('csv-file-input').click()"
+        ondragover="dzOver(event)" ondragleave="dzLeave()" ondrop="dzDrop(event)">
+        <div class="icon">📂</div>
+        <strong style="font-size:14px">Clique ou arraste arquivos CSV aqui</strong>
+        <p>Aceita múltiplos arquivos. O instrumento é detectado automaticamente pelo cabeçalho.<br>
+        Formato esperado: exportações desta interface ou estrutura equivalente.</p>
+      </div>
+      <div id="import-preview" style="display:none"></div>
+    </div>
+    <div class="modal-ft">
+      <button class="blg bsave" id="btn-import-exec" onclick="executeImport()" style="display:none;font-size:12px;padding:8px 16px">
+        💾 Importar para banco + enviar ao Supabase
+      </button>
+      <button class="blg" onclick="closeImport()" style="background:#888;color:#fff;font-size:12px;padding:8px 16px">Cancelar</button>
+      <span id="import-status" style="font-size:12px;color:#555;margin-left:auto"></span>
+    </div>
+  </div>
+</div>
 <div class="main" id="mc"></div>
 </div>
 <div class="kbar">
@@ -622,10 +717,37 @@ async function testConn(){
   if(!url||!key){st.innerHTML='<span class="sdot derr"></span>URL ou key vazios';return;}
   st.innerHTML='<span class="sdot doff"></span>Testando...';
   try{
-    const res=await fetch(`${url}/rest/v1/qvtx_adultos?limit=1`,{headers:{'apikey':key,'Authorization':`Bearer ${key}`}});
-    if(res.ok||res.status===406){st.innerHTML='<span class="sdot dok"></span>Conectado!';toast('✅ Supabase OK',false);}
-    else throw new Error(`HTTP ${res.status}`);
-  }catch(e){st.innerHTML=`<span class="sdot derr"></span>Erro: ${e.message}`;toast('❌ '+e.message,true);}
+    // Passo 1: verificar conectividade básica com o endpoint raiz da API
+    const res1=await fetch(`${url}/rest/v1/`,{headers:{'apikey':key,'Authorization':`Bearer ${key}`}});
+    if(!res1.ok && res1.status!==200){
+      throw new Error(`Servidor inacessível (HTTP ${res1.status}). Verifique a URL.`);
+    }
+    // Passo 2: verificar se as tabelas existem
+    const res2=await fetch(
+      `${url}/rest/v1/rpc/version`,
+      {method:'POST',headers:{'apikey':key,'Authorization':`Bearer ${key}`,'Content-Type':'application/json'},body:'{}'}
+    );
+    // Passo 3: checar tabela qvtx_adultos especificamente
+    const res3=await fetch(`${url}/rest/v1/qvtx_adultos?limit=0`,{
+      headers:{'apikey':key,'Authorization':`Bearer ${key}`,'Accept':'application/json'}
+    });
+    if(res3.status===200||res3.status===206){
+      st.innerHTML='<span class="sdot dok"></span>Conectado — tabelas OK';
+      toast('✅ Supabase OK — tabelas encontradas',false);
+    } else if(res3.status===404){
+      st.innerHTML='<span class="sdot warn" style="background:var(--ouro)"></span>Conectado, mas tabelas não encontradas';
+      toast('⚠️ Conexão OK, mas tabelas ausentes. Execute o qvtx_schema.sql no SQL Editor.',true);
+    } else if(res3.status===401||res3.status===403){
+      st.innerHTML='<span class="sdot warn" style="background:var(--ouro)"></span>Conectado — RLS bloqueando';
+      toast('⚠️ Conexão OK, mas RLS ativo. Desative o RLS nas 3 tabelas.',true);
+    } else {
+      st.innerHTML=`<span class="sdot dok"></span>Conectado (HTTP ${res3.status})`;
+      toast(`Supabase respondeu HTTP ${res3.status}`,false);
+    }
+  }catch(e){
+    st.innerHTML=`<span class="sdot derr"></span>Erro: ${e.message}`;
+    toast('❌ '+e.message,true);
+  }
 }
 
 function toast(msg,err=false){
@@ -635,4 +757,412 @@ function toast(msg,err=false){
 }
 
 render();focusI(0);
+
+// =============================================================
+// PERSISTÊNCIA DE CREDENCIAIS — localStorage
+// =============================================================
+const LS_KEY = 'qvtx_creds';
+
+function loadCreds(){
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if(!raw) return;
+    const c = JSON.parse(raw);
+    const urlEl   = document.getElementById('sburl');
+    const keyEl   = document.getElementById('sbkey');
+    const opEl    = document.getElementById('opname');
+    const chkEl   = document.getElementById('chk-lembrar');
+    if(c.url && urlEl)  urlEl.value  = c.url;
+    if(c.key && keyEl)  keyEl.value  = c.key;
+    if(c.op  && opEl)   opEl.value   = c.op;
+    if(chkEl) chkEl.checked = true;
+    // Atualizar status visual se credenciais carregadas
+    if(c.url && c.key){
+      const st = document.getElementById('cst');
+      if(st) st.innerHTML = '<span class="sdot" style="background:var(--ouro)"></span>Credenciais carregadas — teste a conexão';
+    }
+  } catch(e){ /* localStorage indisponível ou JSON inválido */ }
+}
+
+function saveCreds(){
+  try {
+    const url = document.getElementById('sburl').value.trim();
+    const key = document.getElementById('sbkey').value.trim();
+    const op  = document.getElementById('opname').value.trim();
+    localStorage.setItem(LS_KEY, JSON.stringify({url, key, op}));
+  } catch(e){}
+}
+
+function clearCreds(){
+  try { localStorage.removeItem(LS_KEY); } catch(e){}
+}
+
+function autoSaveCreds(){
+  // Só salva automaticamente se o checkbox estiver marcado
+  const chk = document.getElementById('chk-lembrar');
+  if(chk && chk.checked) saveCreds();
+}
+
+function toggleLembrar(){
+  const chk = document.getElementById('chk-lembrar');
+  if(chk && chk.checked){
+    saveCreds();
+    toast('✅ Credenciais salvas neste navegador', false);
+  } else {
+    clearCreds();
+    toast('🗑 Credenciais removidas do navegador', false);
+  }
+}
+
+// Carregar credenciais salvas ao abrir a página
+loadCreds();
+
+// =============================================================
+// BANCO LOCAL — separado por instrumento
+// =============================================================
+const banco = { adultos:[], '5_17':[], '2_4':[] };
+
+function updDBPanel(){
+  const tot = banco.adultos.length + banco['5_17'].length + banco['2_4'].length;
+  document.getElementById('db-adultos').textContent = banco.adultos.length;
+  document.getElementById('db-5_17').textContent    = banco['5_17'].length;
+  document.getElementById('db-2_4').textContent     = banco['2_4'].length;
+  document.getElementById('db-total').textContent   = tot;
+}
+
+// Exportar banco completo (todos os instrumentos, um arquivo por instrumento)
+function exportCSVAll(){
+  let exported = 0;
+  for(const [inst, rows] of Object.entries(banco)){
+    if(!rows.length) continue;
+    const keys = [...new Set(rows.flatMap(r=>Object.keys(r)))];
+    const lines = [keys.join(',')];
+    for(const r of rows){
+      lines.push(keys.map(k=>{
+        let v = r[k];
+        if(v===null||v===undefined) return '';
+        if(Array.isArray(v)) v = v.join('|');
+        v = String(v).replace(/"/g,'""');
+        return `"${v}"`;
+      }).join(','));
+    }
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob(['﻿'+lines.join('
+')],{type:'text/csv;charset=utf-8'}));
+    a.download = `qvtx_${inst}_banco_${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();
+    exported++;
+  }
+  if(!exported) toast('Banco vazio — nenhum registro para exportar', true);
+  else toast(`${exported} arquivo(s) CSV exportado(s)`, false);
+}
+
+// Também popula banco ao salvar registro manual
+const _origSaveRec = saveRec;
+saveRec = async function(){
+  await _origSaveRec();
+  // O registro mais recente está em ldb — espelhar no banco
+  if(ldb.length){
+    const last = ldb[ldb.length-1];
+    const inst = last._table === 'qvtx_adultos' ? 'adultos'
+               : last._table === 'qvtx_5_17'    ? '5_17'
+               : '2_4';
+    banco[inst].push(last);
+    updDBPanel();
+  }
+};
+
+// =============================================================
+// IMPORTAÇÃO CSV
+// =============================================================
+let importQueue = [];   // [{filename, instrumento, headers, rows, parsed}]
+
+function openImport(){
+  document.getElementById('modal-bg').classList.add('open');
+  document.getElementById('import-preview').style.display = 'none';
+  document.getElementById('import-preview').innerHTML = '';
+  document.getElementById('btn-import-exec').style.display = 'none';
+  document.getElementById('import-status').textContent = '';
+  document.getElementById('dropzone').style.display = 'block';
+  importQueue = [];
+}
+
+function closeImport(){ document.getElementById('modal-bg').classList.remove('open'); }
+function closeImportOutside(e){ if(e.target.id==='modal-bg') closeImport(); }
+
+function dzOver(e){ e.preventDefault(); document.getElementById('dropzone').classList.add('over'); }
+function dzLeave(){ document.getElementById('dropzone').classList.remove('over'); }
+function dzDrop(e){
+  e.preventDefault(); dzLeave();
+  onFileSelected({ target: { files: e.dataTransfer.files } });
+}
+
+function onFileSelected(e){
+  const files = [...e.target.files];
+  if(!files.length) return;
+  importQueue = [];
+  document.getElementById('import-preview').innerHTML = '<p style="padding:12px;color:#666;font-size:13px">⏳ Lendo arquivos...</p>';
+  document.getElementById('import-preview').style.display = 'block';
+  document.getElementById('dropzone').style.display = 'none';
+
+  const promises = files.map(f => readCSV(f));
+  Promise.all(promises).then(results => {
+    importQueue = results.filter(r=>r!==null);
+    renderImportPreview();
+  });
+  // Limpar input para permitir reimport do mesmo arquivo
+  e.target.value = '';
+}
+
+function readCSV(file){
+  return new Promise(resolve => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const text = e.target.result.replace(/^﻿/,''); // remove BOM
+        const lines = text.split(/
+?
+/).filter(l=>l.trim());
+        if(lines.length < 2){ resolve(null); return; }
+
+        // Parse cabeçalho
+        const headers = parseCSVLine(lines[0]);
+        const rows = lines.slice(1).map(l => {
+          const vals = parseCSVLine(l);
+          const obj = {};
+          headers.forEach((h,i) => obj[h] = vals[i] ?? '');
+          return obj;
+        }).filter(r => Object.values(r).some(v=>v!==''));
+
+        // Detectar instrumento pelo cabeçalho
+        const instrumento = detectInstrumento(headers);
+
+        resolve({ filename: file.name, instrumento, headers, rows, valid: instrumento !== null });
+      } catch(err) {
+        resolve({ filename: file.name, instrumento: null, headers:[], rows:[], valid:false, error: err.message });
+      }
+    };
+    reader.onerror = () => resolve(null);
+    reader.readAsText(file, 'UTF-8');
+  });
+}
+
+function parseCSVLine(line){
+  const result = [];
+  let cur = '', inQ = false;
+  for(let i=0; i<line.length; i++){
+    const c = line[i];
+    if(c==='"'){
+      if(inQ && line[i+1]==='"'){ cur+='"'; i++; }
+      else inQ = !inQ;
+    } else if(c===',' && !inQ){
+      result.push(cur.trim()); cur='';
+    } else cur += c;
+  }
+  result.push(cur.trim());
+  return result;
+}
+
+function detectInstrumento(headers){
+  const h = headers.join(',').toLowerCase();
+  // Sinais discriminantes por instrumento
+  if(h.includes('q52_orgao') || h.includes('q53_dialise') || h.includes('q56_escolaridade')) return 'adultos';
+  if(h.includes('nivel_escolar') || h.includes('q49a')) return '5_17';
+  if(h.includes('idade_crianca') || h.includes('q51a')) return '2_4';
+  // Fallback: tentar pelo _table se exportado por esta interface
+  if(h.includes('qvtx_adultos')) return 'adultos';
+  if(h.includes('qvtx_5_17'))    return '5_17';
+  if(h.includes('qvtx_2_4'))     return '2_4';
+  return null;
+}
+
+function instrLabel(k){
+  return k==='adultos'?'Adultos (≥18 anos)':k==='5_17'?'5–17 anos':'2–4 anos';
+}
+
+function renderImportPreview(){
+  if(!importQueue.length){
+    document.getElementById('import-preview').innerHTML = '<p style="padding:12px;color:red">Nenhum arquivo válido lido.</p>';
+    return;
+  }
+
+  const totalRows = importQueue.reduce((a,f)=>a+f.rows.length,0);
+  const valid     = importQueue.filter(f=>f.valid).length;
+  const invalid   = importQueue.length - valid;
+
+  let html = `<div class="info-grid" style="margin-top:12px">
+    <div class="info-card"><div class="v">${importQueue.length}</div><div class="l">Arquivo(s) lido(s)</div></div>
+    <div class="info-card"><div class="v">${totalRows}</div><div class="l">Registros totais</div></div>
+    <div class="info-card"><div class="v" style="color:${invalid?'var(--vermelho)':'var(--verde)'}">${valid}</div><div class="l">Instrumentos detectados</div></div>
+    <div class="info-card"><div class="v" style="color:${invalid?'var(--vermelho)':'var(--verde)'}">${invalid}</div><div class="l">Sem instrumento detectado</div></div>
+  </div>`;
+
+  for(const f of importQueue){
+    const tag = f.valid
+      ? `<span class="stag ok">✓ ${instrLabel(f.instrumento)}</span>`
+      : `<span class="stag err">✗ Instrumento não detectado</span>`;
+
+    html += `<div style="margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <strong style="font-size:13px">📄 ${f.filename}</strong>
+        ${tag}
+        <span class="stag warn" style="margin-left:auto">${f.rows.length} registros</span>
+      </div>`;
+
+    if(f.valid && f.rows.length){
+      // Preview das primeiras 5 linhas, primeiras 8 colunas relevantes
+      const previewCols = f.headers.filter(h=>!h.startsWith('_')).slice(0,8);
+      html += `<div class="prev-wrap"><table><tr>`;
+      previewCols.forEach(c => html += `<th>${c}</th>`);
+      html += `<th>...</th></tr>`;
+      f.rows.slice(0,5).forEach(r => {
+        html += '<tr>';
+        previewCols.forEach(c => {
+          const v = r[c]||'';
+          html += `<td title="${v}">${v.length>22?v.slice(0,22)+'…':v}</td>`;
+        });
+        html += '<td style="color:#aaa">…</td></tr>';
+      });
+      if(f.rows.length>5) html += `<tr><td colspan="${previewCols.length+1}" style="color:#999;text-align:center;padding:4px">… mais ${f.rows.length-5} registros</td></tr>`;
+      html += '</table></div>';
+    } else if(!f.valid){
+      html += `<div style="font-size:12px;color:var(--vermelho);padding:6px 0">
+        ⚠ Cabeçalho não reconhecido. Colunas encontradas: <em>${f.headers.slice(0,6).join(', ')}...</em><br>
+        O arquivo deve ser exportado por esta interface ou ter as mesmas colunas do schema QVTX.
+      </div>`;
+    }
+    html += '</div><hr style="margin:10px 0;border-color:#eee">';
+  }
+
+  const hasValid = importQueue.some(f=>f.valid && f.rows.length>0);
+  document.getElementById('import-preview').innerHTML = html;
+  document.getElementById('import-preview').style.display = 'block';
+  document.getElementById('btn-import-exec').style.display = hasValid ? 'inline-block' : 'none';
+  document.getElementById('import-status').textContent = hasValid
+    ? `${importQueue.filter(f=>f.valid).reduce((a,f)=>a+f.rows.length,0)} registros prontos para importar`
+    : 'Nenhum arquivo válido para importar';
+}
+
+// =============================================================
+// EXECUTAR IMPORTAÇÃO
+// =============================================================
+async function executeImport(){
+  const url = document.getElementById('sburl').value.trim();
+  const key = document.getElementById('sbkey').value.trim();
+  const usarSupabase = !!(url && key);
+
+  const validFiles = importQueue.filter(f=>f.valid && f.rows.length>0);
+  if(!validFiles.length){ toast('Nenhum arquivo válido', true); return; }
+
+  // Substituir conteúdo do modal por progress
+  const body = document.getElementById('modal-body');
+  let totalRecs = validFiles.reduce((a,f)=>a+f.rows.length,0);
+  let done=0, erros=0;
+
+  body.innerHTML = `
+    <div style="padding:8px 0">
+      <strong style="font-size:14px">Importando ${totalRecs} registros${usarSupabase?' → Supabase':' → banco local'}...</strong>
+      <div class="up-bar-wrap"><div class="up-bar" id="up-bar" style="width:0%"></div></div>
+      <div id="up-pct" style="font-size:12px;color:#666;margin-bottom:8px">0 de ${totalRecs}</div>
+      <div class="up-log" id="up-log"></div>
+    </div>`;
+  document.getElementById('btn-import-exec').style.display = 'none';
+
+  const log = (msg, isErr=false) => {
+    const el = document.getElementById('up-log');
+    if(!el) return;
+    const line = document.createElement('div');
+    line.style.color = isErr ? 'var(--vermelho)' : '#555';
+    line.textContent = `[${new Date().toLocaleTimeString('pt-BR')}] ${msg}`;
+    el.appendChild(line);
+    el.scrollTop = el.scrollHeight;
+  };
+
+  const updProg = () => {
+    const pct = Math.round(done/totalRecs*100);
+    const bar = document.getElementById('up-bar');
+    const pctEl = document.getElementById('up-pct');
+    if(bar) bar.style.width = pct+'%';
+    if(pctEl) pctEl.textContent = `${done} de ${totalRecs} (${pct}%)`;
+  };
+
+  for(const f of validFiles){
+    log(`Processando ${f.filename} — ${f.rows.length} registros (${instrLabel(f.instrumento)})`);
+    const tableName = INST[f.instrumento].table;
+
+    // Processar em lotes de 50 para Supabase
+    const BATCH = 50;
+    for(let i=0; i<f.rows.length; i+=BATCH){
+      const batch = f.rows.slice(i, i+BATCH).map(r => cleanRow(r));
+
+      // Adicionar ao banco local
+      banco[f.instrumento].push(...batch);
+
+      if(usarSupabase){
+        try{
+          const res = await fetch(`${url}/rest/v1/${tableName}`, {
+            method: 'POST',
+            headers:{
+              'Content-Type':'application/json',
+              'apikey': key,
+              'Authorization': `Bearer ${key}`,
+              'Prefer': 'return=minimal'
+            },
+            body: JSON.stringify(batch)
+          });
+          if(!res.ok){
+            const errText = await res.text();
+            throw new Error(`HTTP ${res.status}: ${errText.slice(0,120)}`);
+          }
+          log(`  Lote ${Math.floor(i/BATCH)+1}: ${batch.length} registros enviados ao Supabase ✓`);
+        }catch(err){
+          erros += batch.length;
+          log(`  Lote ${Math.floor(i/BATCH)+1} FALHOU: ${err.message}`, true);
+        }
+      }
+
+      done += batch.length;
+      updProg();
+      // Pequena pausa para não bloquear a UI
+      await new Promise(r=>setTimeout(r,10));
+    }
+    log(`✓ ${f.filename} concluído`);
+  }
+
+  updDBPanel();
+
+  const resumo = `✅ Importação concluída: ${done - erros} registros adicionados ao banco` +
+    (erros ? ` · ⚠ ${erros} com erro` : '') +
+    (usarSupabase ? ' (Supabase + local)' : ' (somente local)');
+  log(resumo);
+  document.getElementById('import-status').textContent = resumo;
+
+  // Botão para fechar
+  const ft = document.getElementById('modal-ft') || document.querySelector('.modal-ft');
+  const closeBtn = document.createElement('button');
+  closeBtn.className='blg bsave';
+  closeBtn.style='font-size:12px;padding:8px 16px';
+  closeBtn.textContent='✓ Fechar';
+  closeBtn.onclick=closeImport;
+  if(ft) ft.insertBefore(closeBtn, ft.firstChild);
+
+  toast(resumo.replace('✅ ',''), erros>0);
+}
+
+// Limpar e tipar valores do CSV para o banco
+function cleanRow(r){
+  const out = {};
+  for(const [k,v] of Object.entries(r)){
+    if(k.startsWith('_')) continue; // metadados internos
+    if(v==='' || v===null || v===undefined){ out[k]=null; continue; }
+    // Colunas booleanas
+    if(v==='true')  { out[k]=true;  continue; }
+    if(v==='false') { out[k]=false; continue; }
+    // Arrays (pipe-separated)
+    if(typeof v==='string' && v.includes('|')){ out[k]=v.split('|'); continue; }
+    out[k]=v;
+  }
+  return out;
+}
+
 </script></body></html>
