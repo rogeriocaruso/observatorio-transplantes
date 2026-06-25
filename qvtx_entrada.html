@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QVTX — Entrada de Dados | CET-RS</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Source+Sans+3:wght@400;600&display=swap');
+:root{--primary:#1a3a1a;--verde:#2d6e35;--ouro:#c9a227;--vermelho:#b22222;--bg:#f7f8f6;--text:#1c1c1c;--border:#d0d8cf;--sim:#1e6b2e;--nao:#9b1c1c;--neutro:#4a6072;--sw:260px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Source Sans 3',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+header{background:var(--primary);color:#fff;padding:10px 20px;display:flex;align-items:center;gap:14px;border-bottom:3px solid var(--ouro);position:sticky;top:0;z-index:100}
+header .inst{font-size:10px;line-height:1.4;opacity:.85}
+header .inst strong{font-family:'Montserrat',sans-serif;font-size:13px;font-weight:800;opacity:1;display:block}
+header .badge{margin-left:auto;background:var(--ouro);color:var(--primary);font-family:'Montserrat',sans-serif;font-weight:800;font-size:11px;padding:4px 10px;border-radius:20px}
+.app{display:flex;min-height:calc(100vh - 56px)}
+.sidebar{width:var(--sw);background:var(--primary);color:#fff;padding:16px;display:flex;flex-direction:column;gap:10px;flex-shrink:0}
+.sidebar h3{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--ouro);margin-bottom:4px}
+.ibtn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;padding:10px 12px;border-radius:6px;cursor:pointer;font-family:'Source Sans 3',sans-serif;font-size:12px;text-align:left;transition:all .15s;line-height:1.3}
+.ibtn:hover{background:rgba(255,255,255,.2)}
+.ibtn.active{background:var(--ouro);color:var(--primary);border-color:var(--ouro);font-weight:600}
+.sidebar hr{border:none;border-top:1px solid rgba(255,255,255,.15)}
+.prog-area{font-size:11px;opacity:.8}
+.prog-wrap{background:rgba(255,255,255,.15);border-radius:4px;height:6px;margin:6px 0;overflow:hidden}
+.prog-bar{height:100%;background:var(--ouro);transition:width .3s;border-radius:4px}
+.cfg{display:flex;flex-direction:column;gap:3px;font-size:11px}
+.cfg label{opacity:.7}
+.cfg input{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;padding:5px 8px;border-radius:4px;font-size:11px;font-family:monospace}
+.cfg input::placeholder{opacity:.4}
+.cfg input:focus{outline:none;border-color:var(--ouro)}
+.bsm{padding:7px 10px;border-radius:5px;border:none;cursor:pointer;font-family:'Source Sans 3',sans-serif;font-size:12px;font-weight:600;transition:opacity .15s}
+.bsm:hover{opacity:.85}
+.b-exp{background:var(--ouro);color:var(--primary)}
+.b-new{background:var(--verde);color:#fff}
+.b-con{background:#2563eb;color:#fff}
+.sdot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
+.dok{background:#4caf50}.derr{background:var(--vermelho)}.doff{background:#888}
+#cst{font-size:11px;opacity:.8}
+.main{flex:1;padding:20px 28px;max-width:900px}
+.ftit{font-family:'Montserrat',sans-serif;font-size:18px;font-weight:800;color:var(--primary);margin-bottom:4px}
+.fsub{font-size:12px;color:#666;margin-bottom:18px}
+.section{background:#fff;border-radius:8px;border:1px solid var(--border);margin-bottom:16px;overflow:hidden}
+.shd{background:var(--primary);color:#fff;padding:8px 14px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;display:flex;align-items:center;gap:8px}
+.shd .tag{background:var(--ouro);color:var(--primary);padding:1px 7px;border-radius:10px;font-size:10px}
+.idg{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px}
+.idg .full{grid-column:1/-1}
+.fg{display:flex;flex-direction:column;gap:3px}
+.fg label{font-size:11px;font-weight:600;color:#555;text-transform:uppercase;letter-spacing:.5px}
+.fg input,.fg select{border:1px solid var(--border);border-radius:5px;padding:7px 10px;font-family:'Source Sans 3',sans-serif;font-size:13px;color:var(--text);background:#fff;transition:border-color .15s}
+.fg input:focus,.fg select:focus{outline:none;border-color:var(--verde);box-shadow:0 0 0 2px rgba(45,110,53,.1)}
+.qi{display:flex;align-items:center;padding:9px 14px;gap:10px;border-bottom:1px solid #f0f0f0;transition:background .1s}
+.qi:last-child{border-bottom:none}
+.qi:focus-within{background:#fafff8}
+.qn{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:800;color:var(--primary);min-width:28px;opacity:.6}
+.qt{flex:1;font-size:13px;line-height:1.4}
+.qo{display:flex;gap:5px;flex-shrink:0}
+.ob{border:1.5px solid var(--border);background:#fff;padding:5px 12px;border-radius:5px;cursor:pointer;font-family:'Source Sans 3',sans-serif;font-size:12px;font-weight:600;transition:all .12s;white-space:nowrap}
+.ob:hover{filter:brightness(.95)}
+.ob.sim{border-color:#aad4b0;color:#1e6b2e}
+.ob.nao{border-color:#f0b8b8;color:#9b1c1c}
+.ob.neu{border-color:#b8ccd8;color:#4a6072}
+.ob.sim.sel{background:#d4edda;border-color:var(--sim);color:var(--sim)}
+.ob.nao.sel{background:#f8d7da;border-color:var(--nao);color:var(--nao)}
+.ob.neu.sel{background:#d6e4ef;border-color:var(--neutro);color:var(--neutro)}
+.ni{display:grid;grid-template-columns:1fr auto;align-items:center;padding:8px 14px;border-bottom:1px solid #f0f0f0;gap:8px}
+.ni:last-child{border-bottom:none}
+.nt{font-size:13px}
+.nt strong{font-size:10px;color:#888;margin-right:4px;font-weight:600}
+.no{display:flex;gap:5px}
+.ca{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px 14px;margin-bottom:16px;display:flex;gap:20px;flex-wrap:wrap}
+.ci{font-size:12px}
+.ci strong{font-family:'Montserrat',sans-serif;font-size:20px;color:var(--verde);display:block;line-height:1}
+.bbar{position:sticky;bottom:0;background:#fff;border-top:2px solid var(--border);padding:10px 28px;display:flex;align-items:center;gap:10px}
+.blg{padding:10px 22px;border-radius:6px;border:none;cursor:pointer;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:800;transition:opacity .15s}
+.blg:hover{opacity:.88}
+.bsave{background:var(--verde);color:#fff}
+.bclr{background:var(--vermelho);color:#fff}
+#ss{font-size:12px;color:#666;margin-left:auto}
+#toast{position:fixed;bottom:70px;right:20px;background:var(--primary);color:#fff;padding:10px 18px;border-radius:6px;font-size:13px;font-weight:600;opacity:0;transform:translateY(10px);transition:all .3s;pointer-events:none;z-index:200;border-left:4px solid var(--ouro)}
+#toast.show{opacity:1;transform:translateY(0)}
+#toast.err{border-left-color:var(--vermelho);background:#5a0000}
+.kbar{background:#f0f4ef;border-top:1px solid var(--border);padding:5px 28px;font-size:11px;color:#666;display:flex;gap:16px;flex-wrap:wrap}
+.kbar span{display:flex;align-items:center;gap:4px}
+kbd{background:#f0f0f0;border:1px solid #ccc;border-radius:3px;padding:1px 4px;font-size:10px;font-family:monospace;color:#555}
+
+/* ── MODAL ───────────────────────────────────────────────── */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:300;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-bg.open{opacity:1;pointer-events:all}
+.modal{background:#fff;border-radius:10px;width:min(820px,95vw);max-height:88vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.3);transform:translateY(16px);transition:transform .2s}
+.modal-bg.open .modal{transform:translateY(0)}
+.modal-hd{background:var(--primary);color:#fff;padding:14px 20px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.modal-hd h2{font-family:'Montserrat',sans-serif;font-size:14px;font-weight:800}
+.modal-hd .close{margin-left:auto;background:none;border:none;color:#fff;font-size:20px;cursor:pointer;opacity:.7;line-height:1}
+.modal-hd .close:hover{opacity:1}
+.modal-body{padding:18px 20px;overflow-y:auto;flex:1}
+.modal-ft{padding:12px 20px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:center;flex-shrink:0;background:#fafafa}
+
+/* Drop zone */
+.dropzone{border:2px dashed var(--border);border-radius:8px;padding:32px;text-align:center;cursor:pointer;transition:all .2s;background:#fafffe}
+.dropzone:hover,.dropzone.over{border-color:var(--verde);background:#f0fff4}
+.dropzone p{font-size:13px;color:#666;margin-top:8px}
+.dropzone .icon{font-size:36px}
+
+/* Preview table */
+.prev-wrap{overflow-x:auto;max-height:300px;border:1px solid var(--border);border-radius:6px;margin-top:12px}
+.prev-wrap table{border-collapse:collapse;font-size:11px;width:100%}
+.prev-wrap th{background:var(--primary);color:#fff;padding:5px 8px;text-align:left;position:sticky;top:0;white-space:nowrap}
+.prev-wrap td{padding:4px 8px;border-bottom:1px solid #f0f0f0;white-space:nowrap;max-width:160px;overflow:hidden;text-overflow:ellipsis}
+.prev-wrap tr:nth-child(even) td{background:#f8f8f8}
+
+/* Status tags */
+.stag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600}
+.stag.ok{background:#d4edda;color:#1e6b2e}
+.stag.warn{background:#fff3cd;color:#856404}
+.stag.err{background:#f8d7da;color:#9b1c1c}
+
+/* Info grid */
+.info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:14px}
+.info-card{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px 12px}
+.info-card .v{font-family:'Montserrat',sans-serif;font-size:22px;font-weight:800;color:var(--verde)}
+.info-card .l{font-size:11px;color:#666;margin-top:2px}
+
+/* Progress de upload */
+.up-bar-wrap{background:#e9ecef;border-radius:4px;height:8px;overflow:hidden;margin:8px 0}
+.up-bar{height:100%;background:var(--verde);transition:width .3s;border-radius:4px}
+.up-log{font-size:11px;color:#555;max-height:120px;overflow-y:auto;background:#f8f8f8;border:1px solid var(--border);border-radius:4px;padding:8px;font-family:monospace;margin-top:8px}
+
+/* Painel banco */
+.db-panel{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:10px 12px;font-size:11px}
+.db-panel .db-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+.db-panel .db-row:last-child{border-bottom:none}
+.db-panel .db-n{font-family:'Montserrat',sans-serif;font-size:16px;font-weight:800;color:var(--ouro)}
+
+/* input file oculto */
+#csv-file-input{display:none}
+</style>
+</head>
+<body>
+<header>
+  <div class="inst">
+    <strong>Observatório de Transplantes — CET-RS</strong>
+    Governo do Estado do Rio Grande do Sul · Secretaria da Saúde · Divisão de Transplantes
+  </div>
+  <div class="badge">QVTX · Entrada de Dados</div>
+</header>
+<div class="app">
+<aside class="sidebar">
+  <h3>Instrumento</h3>
+  <button class="ibtn active" onclick="setInst('adultos')">👤 Adultos<br><small style="opacity:.7">≥18 anos · 56 itens</small></button>
+  <button class="ibtn" onclick="setInst('5_17')">🧒 5 a 17 anos<br><small style="opacity:.7">49 itens</small></button>
+  <button class="ibtn" onclick="setInst('2_4')">👶 2 a 4 anos<br><small style="opacity:.7">52 itens</small></button>
+  <hr>
+  <h3>Progresso</h3>
+  <div class="prog-area"><div id="ptxt">0 de 0 respondidos</div>
+  <div class="prog-wrap"><div class="prog-bar" id="pbar" style="width:0%"></div></div></div>
+  <hr>
+  <h3>Supabase</h3>
+  <div class="cfg"><label>URL do projeto</label><input type="text" id="sburl" placeholder="https://xxx.supabase.co" oninput="autoSaveCreds()"></div>
+  <div class="cfg"><label>anon key</label><input type="password" id="sbkey" placeholder="eyJh..." oninput="autoSaveCreds()"></div>
+  <div style="display:flex;align-items:center;gap:6px;font-size:11px;opacity:.8;margin-top:2px">
+    <input type="checkbox" id="chk-lembrar" onchange="toggleLembrar()" style="cursor:pointer">
+    <label for="chk-lembrar" style="cursor:pointer;opacity:1">Lembrar neste navegador</label>
+  </div>
+  <button class="bsm b-con" onclick="testConn()">Testar conexão</button>
+  <div id="cst"><span class="sdot doff"></span>Não configurado</div>
+  <div class="cfg" style="margin-top:4px"><label>Operador</label><input type="text" id="opname" placeholder="ex: MLS" style="text-transform:uppercase" oninput="autoSaveCreds()"></div>
+  <hr>
+  <h3>Ações</h3>
+  <button class="bsm b-new" onclick="newRec()">＋ Novo registro</button>
+  <button class="bsm" style="background:#7b3fa0;color:#fff" onclick="openImport()">⬆ Importar CSV</button>
+  <button class="bsm b-exp" onclick="exportCSV()">⬇ Exportar CSV sessão</button>
+  <hr>
+  <h3>Banco local</h3>
+  <div class="db-panel" id="db-panel">
+    <div class="db-row"><span>Adultos</span><span class="db-n" id="db-adultos">0</span></div>
+    <div class="db-row"><span>5–17 anos</span><span class="db-n" id="db-5_17">0</span></div>
+    <div class="db-row"><span>2–4 anos</span><span class="db-n" id="db-2_4">0</span></div>
+    <div class="db-row" style="margin-top:4px"><span style="opacity:.7">Total</span><span class="db-n" id="db-total" style="color:#fff">0</span></div>
+  </div>
+  <button class="bsm b-exp" onclick="exportCSVAll()" style="margin-top:2px">⬇ Exportar banco completo</button>
+</aside>
+
+<!-- INPUT FILE OCULTO -->
+<input type="file" id="csv-file-input" accept=".csv" multiple onchange="onFileSelected(event)">
+
+<!-- MODAL IMPORTAÇÃO -->
+<div class="modal-bg" id="modal-bg" onclick="closeImportOutside(event)">
+  <div class="modal">
+    <div class="modal-hd">
+      <span style="font-size:18px">⬆</span>
+      <h2>Importar CSV para o banco</h2>
+      <button class="close" onclick="closeImport()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body">
+      <div class="dropzone" id="dropzone"
+        onclick="document.getElementById('csv-file-input').click()"
+        ondragover="dzOver(event)" ondragleave="dzLeave()" ondrop="dzDrop(event)">
+        <div class="icon">📂</div>
+        <strong style="font-size:14px">Clique ou arraste arquivos CSV aqui</strong>
+        <p>Aceita múltiplos arquivos. O instrumento é detectado automaticamente pelo cabeçalho.<br>
+        Formato esperado: exportações desta interface ou estrutura equivalente.</p>
+      </div>
+      <div id="import-preview" style="display:none"></div>
+    </div>
+    <div class="modal-ft">
+      <button class="blg bsave" id="btn-import-exec" onclick="executeImport()" style="display:none;font-size:12px;padding:8px 16px">
+        💾 Importar para banco + enviar ao Supabase
+      </button>
+      <button class="blg" onclick="closeImport()" style="background:#888;color:#fff;font-size:12px;padding:8px 16px">Cancelar</button>
+      <span id="import-status" style="font-size:12px;color:#555;margin-left:auto"></span>
+    </div>
+  </div>
+</div>
+<div class="main" id="mc"></div>
+</div>
+<div class="kbar">
+  <span><kbd>S</kbd> Sim / Tem</span>
+  <span><kbd>N</kbd> Não / Precisa</span>
+  <span><kbd>3</kbd> 3ª opção</span>
+  <span><kbd>Tab</kbd> Próximo</span>
+  <span><kbd>Shift+Tab</kbd> Anterior</span>
+  <span><kbd>Ctrl+S</kbd> Salvar</span>
+  <span><kbd>Ctrl+N</kbd> Novo</span>
+</div>
+<div class="bbar">
+  <button class="blg bsave" onclick="saveRec()">💾 Salvar Registro</button>
+  <button class="blg bclr" onclick="clearForm()">🗑 Limpar</button>
+  <span id="ss"></span>
+</div>
+<div id="toast"></div>
+<script>
+const INST={
+adultos:{
+  table:'qvtx_adultos',label:'QVTX — Adultos (≥18 anos)',
+  idFields:[
+    {id:'nome',label:'Nome completo',type:'text',full:true},
+    {id:'data_nascimento',label:'Data de nascimento',type:'date'},
+    {id:'nome_mae',label:'Nome da mãe',type:'text'},
+    {id:'equipe_transplante',label:'Equipe transplantadora',type:'text'},
+    {id:'data_transplante',label:'Data do último transplante',type:'date'},
+    {id:'data_aplicacao',label:'Data de aplicação do questionário',type:'date'},
+    {id:'consentiu',label:'Consentimento',type:'sel',opts:[{v:'true',l:'Sim — concordou'},{v:'false',l:'Não — recusou'}]},
+  ],
+  sections:[
+    {title:'Acesso e Atendimento',tag:'1–18',items:[
+      {n:'01',t:'Foi difícil conseguir a primeira consulta com o médico do transplante.'},
+      {n:'02',t:'Foi difícil conseguir exames para entrar na lista do transplante.'},
+      {n:'03',t:'Mudou de cidade para estar perto do hospital do transplante.'},
+      {n:'04',t:'Foi difícil chegar na hora marcada para o transplante.'},
+      {n:'05',t:'O quarto e o banheiro do hospital eram limpos e as coisas funcionavam.'},
+      {n:'06',t:'No hospital, explicaram como cuidar da saúde.'},
+      {n:'07',t:'No hospital, explicaram como tomar os remédios e os horários.'},
+      {n:'08',t:'Explicaram quando devo ir para a emergência.'},
+      {n:'09',t:'Nas consultas, me ouvem, se interessam e tiram minhas dúvidas.'},
+      {n:'10',t:'Se for urgente, tenho como falar com os médicos ou mandar mensagem.'},
+      {n:'11',t:'Viajo para ir às consultas de revisão do transplante.'},
+      {n:'12',t:'É um problema conseguir transporte para consultar.'},
+      {n:'13',t:'Ganho passagem ou transporte para consultar.'},
+      {n:'14',t:'Durmo em casa de apoio ou de conhecidos quando venho consultar.'},
+      {n:'15',t:'Ganho do governo dinheiro para comer e ter onde dormir nas consultas.'},
+      {n:'16',t:'Sempre consigo de graça os remédios para evitar rejeição do órgão.'},
+      {n:'17',t:'Tenho que comprar alguns dos outros remédios.'},
+      {n:'18',t:'Ganho protetor solar.'},
+    ]},
+    {title:'Qualidade de Vida',tag:'19–31',items:[
+      {n:'19',t:'Durmo bem, sem tomar remédio para o sono.'},
+      {n:'20',t:'Tenho energia e ânimo para fazer o que preciso.'},
+      {n:'21',t:'Geralmente me sinto bem de saúde.'},
+      {n:'22',t:'Saio para me divertir com amigos.'},
+      {n:'23',t:'Preciso de ajuda para tomar banho, me vestir ou andar na rua.'},
+      {n:'24',t:'Consigo fazer vários serviços de casa.'},
+      {n:'25',t:'Preciso de ajuda para tomar meus remédios direito.'},
+      {n:'26',t:'Meu órgão transplantado está muito bem.',tp:'3',o:['Sim','Não','Não sei'],v:['sim','nao','nao_sei']},
+      {n:'27',t:'Ando muito nervoso, me sentindo para baixo.'},
+      {n:'28',t:'Me sinto capaz de trabalhar ou estudar.'},
+      {n:'29',t:'Tive dificuldade de conseguir trabalho por ser transplantado.',tp:'3',o:['Sim','Não','Não procurei trabalho'],v:['sim','nao','nao_procurou']},
+      {n:'30',t:'Trabalho ou estudo atualmente.'},
+      {n:'31',t:'Tenho atividades ou trabalhos que evito por causa da saúde.'},
+    ]},
+    {title:'Adesão ao Tratamento',tag:'32–34',items:[
+      {n:'32',t:'Todos os dias tomo os remédios do transplante.'},
+      {n:'33',t:'Tomo a quantidade de remédios que o médico receitou.'},
+      {n:'34',t:'Tomo meus remédios nos horários da receita.'},
+    ]},
+    {title:'Autocuidado',tag:'35–44',items:[
+      {n:'35',t:'Antes de comer, lavo as mãos com água e sabão.'},
+      {n:'36',t:'Como frutas e verduras bem lavadas.',tp:'3',o:['Sim','Não','Me alimento por sonda'],v:['sim','nao','sonda']},
+      {n:'37',t:'Como carnes ou peixes bem cozidos.',tp:'3',o:['Sim','Não','Me alimento por sonda'],v:['sim','nao','sonda']},
+      {n:'38',t:'Bebo água várias vezes por dia.'},
+      {n:'39',t:'Escovo os dentes todos os dias.'},
+      {n:'40',t:'Uso protetor solar todos os dias.'},
+      {n:'41',t:'Sempre uso máscara em hospitais e postos de saúde.'},
+      {n:'42',t:'Me cuido para evitar doenças transmitidas por pessoas.'},
+      {n:'43',t:'Me cuido para evitar doenças transmitidas por animais e terra.'},
+      {n:'44',t:'Faço exercícios físicos três dias ou mais por semana.'},
+    ]},
+    {title:'Seguimento',tag:'45–50',items:[
+      {n:'45',t:'Vou ao dentista pelo menos uma vez por ano.'},
+      {n:'46',t:'Vou ao médico examinar a pele pelo menos uma vez por ano.'},
+      {n:'47',t:'Vou a todas as consultas marcadas para revisar o transplante.'},
+      {n:'48',t:'Quando consulto com outros médicos, digo que sou transplantado.'},
+      {n:'49',t:'Se for à emergência, vou avisar os médicos do transplante.'},
+      {n:'50',t:'Neste mês ou no mês passado, fiquei no hospital mais de uma semana.'},
+    ]},
+  ],
+  nk:'51',needs:[
+    {s:'a',t:'Reforço escolar para as aulas'},
+    {s:'b',t:'Treinamentos ou cursos para o trabalho'},
+    {s:'c',t:'Terapia ocupacional para atividades diárias'},
+    {s:'d',t:'Nutricionista para orientar a alimentação'},
+    {s:'e',t:'Psicólogo ou Psiquiatra para emoções e comportamentos'},
+  ],
+  extra:[
+    {id:'q52_orgao',label:'52. Órgãos recebidos',type:'mck',opts:['Rim','Fígado','Coração','Pulmão','Pâncreas']},
+    {id:'q53_dialise',label:'53. Faz diálise atualmente?',type:'bool'},
+    {id:'q54_tipo_doador',label:'54. Tipo de doador',type:'sel',opts:[{v:'falecido',l:'Doador falecido'},{v:'vivo',l:'Doador vivo'},{v:'ambos',l:'Falecido e vivo'}]},
+    {id:'q55_ambulatorio',label:'55. Consulta em ambulatório (marque todos)',type:'mck',opts:['SUS','Convênio','Particular']},
+    {id:'q56_escolaridade',label:'56. Escolaridade do paciente',type:'sel',opts:[{v:'1_4',l:'1º a 4º ano'},{v:'5_9',l:'5º a 9º ano'},{v:'medio',l:'Ensino médio'},{v:'superior',l:'Curso superior'}]},
+  ],
+},
+
+'5_17':{
+  table:'qvtx_5_17',label:'QVTX — Crianças 5 a 17 anos',
+  idFields:[
+    {id:'nome',label:'Nome completo',type:'text',full:true},
+    {id:'data_nascimento',label:'Data de nascimento',type:'date'},
+    {id:'nome_mae',label:'Nome da mãe',type:'text'},
+    {id:'equipe_transplante',label:'Equipe transplantadora',type:'text'},
+    {id:'data_transplante',label:'Data do último transplante',type:'date'},
+    {id:'data_aplicacao',label:'Data de aplicação do questionário',type:'date'},
+    {id:'orgao_transplante',label:'Órgão transplantado',type:'sel',opts:[{v:'rim',l:'Rim'},{v:'figado',l:'Fígado'},{v:'coracao',l:'Coração'},{v:'pulmao',l:'Pulmão'}]},
+    {id:'nivel_escolar',label:'Nível escolar',type:'sel',opts:[{v:'pre_1_2',l:'Pré-escola/1º-2º'},{v:'3_4',l:'3º-4º ano'},{v:'5_9',l:'5º-9º ano'},{v:'medio',l:'Ensino médio'},{v:'especial',l:'Ed. especial'}]},
+    {id:'consentiu',label:'Consentimento',type:'sel',opts:[{v:'true',l:'Sim — concordou'},{v:'false',l:'Não — recusou'}]},
+    {id:'responsavel_tipo',label:'Responsável',type:'sel',opts:[{v:'mae_pai',l:'Mãe ou pai'},{v:'avo',l:'Avó ou avô'},{v:'tutor',l:'Tutor'}]},
+  ],
+  sections:[
+    {title:'Qualidade de Vida — Criança',tag:'1–23',items:[
+      {n:'01',t:'Durmo bem e acordo descansado, sem tomar remédio para sono.'},
+      {n:'02',t:'Saio para me divertir com meus amigos ou amigas.'},
+      {n:'03',t:'Tenho amigo ou amiga que vem na minha casa.'},
+      {n:'04',t:'Lavo e seco minhas mãos, sem ajuda de outra pessoa.'},
+      {n:'05',t:'Me visto e boto os calçados, sozinho.'},
+      {n:'06',t:'Preciso de ajuda para fazer os trabalhos durante a aula.'},
+      {n:'07',t:'Ajudo em casa, quando me pedem.'},
+      {n:'08',t:'Vou à escola.'},
+      {n:'09',t:'Na escola, faço educação física junto com meus colegas.',tp:'3',o:['Sim','Não','Não vou à escola'],v:['sim','nao','nao_vai_escola']},
+      {n:'10',t:'Meus amigos sabem as brincadeiras que podem machucar meu transplante.',tp:'3',o:['Sim','Não','Não tenho amigo'],v:['sim','nao','nao_tenho_amigo']},
+      {n:'11',t:'Tem brincadeira que não faço, por causa da minha saúde.'},
+      {n:'12',t:'Quando tenho dor ou me sinto mal, falo para minha família.'},
+      {n:'13',t:'Todos os dias tomo os remédios do transplante.'},
+      {n:'14',t:'Tomo meus remédios nos horários certos.'},
+      {n:'15',t:'Tomo a quantidade de remédio que o médico mandou.'},
+      {n:'16',t:'Antes de comer, lavo as mãos com água e sabão.'},
+      {n:'17',t:'Como frutas e verduras.',tp:'3',o:['Sim','Não','Me alimento por sonda'],v:['sim','nao','sonda']},
+      {n:'18',t:'Como carne ou peixe bem cozidos.',tp:'3',o:['Sim','Não','Me alimento por sonda'],v:['sim','nao','sonda']},
+      {n:'19',t:'Bebo água muitas vezes por dia.'},
+      {n:'20',t:'Escovo os dentes todos os dias.'},
+      {n:'21',t:'Uso protetor solar na pele todos os dias.'},
+      {n:'22',t:'Sempre uso máscara em hospitais ou postos de saúde.'},
+      {n:'23',t:'Me cuido para não pegar doenças de animais.'},
+    ]},
+    {title:'Atendimento — com Responsável',tag:'24–48',items:[
+      {n:'24',t:'Foi difícil conseguir a primeira consulta com o médico do transplante.'},
+      {n:'25',t:'Foi difícil conseguir exames para entrar na lista do transplante.'},
+      {n:'26',t:'Me mudei de cidade para estar perto do hospital do transplante.'},
+      {n:'27',t:'Foi difícil chegar na hora marcada para o transplante.'},
+      {n:'28',t:'O quarto e o banheiro do hospital eram limpos e as coisas funcionavam.'},
+      {n:'29',t:'No hospital, explicaram como cuidar da saúde.'},
+      {n:'30',t:'No hospital, explicaram como tomar os remédios e os horários.'},
+      {n:'31',t:'Explicaram quando tenho que ir para a emergência.'},
+      {n:'32',t:'Nas consultas, conversam comigo e o meu familiar e tiram nossas dúvidas.'},
+      {n:'33',t:'Se for urgente, tenho como falar com os médicos ou mandar mensagem.'},
+      {n:'34',t:'Viajo para ir às consultas de revisão do transplante.'},
+      {n:'35',t:'É um problema conseguir transporte para consultar.'},
+      {n:'36',t:'Ganho passagem ou transporte de graça para consultar.'},
+      {n:'37',t:'Durmo em casa de apoio ou de conhecidos quando venho consultar.'},
+      {n:'38',t:'Recebo do governo dinheiro para comer e ter onde dormir nas consultas.'},
+      {n:'39',t:'Sempre consigo de graça os remédios para evitar rejeição do órgão.'},
+      {n:'40',t:'Temos que comprar alguns dos outros remédios.'},
+      {n:'41',t:'Conseguimos protetor solar de graça.'},
+      {n:'42',t:'Vou ao dentista pelo menos uma vez por ano.'},
+      {n:'43',t:'Vou ao médico examinar a pele pelo menos uma vez por ano.'},
+      {n:'44',t:'Faço exame da visão pelo menos uma vez por ano.'},
+      {n:'45',t:'Vou a todas as consultas marcadas para revisar o transplante.'},
+      {n:'46',t:'Quando consulto com outros médicos, dizemos que sou transplantado.'},
+      {n:'47',t:'Se eu for na emergência, vamos avisar meus médicos do transplante.'},
+      {n:'48',t:'Neste mês ou no mês passado, fiquei no hospital mais de uma semana.'},
+    ]},
+  ],
+  nk:'49',needs:[
+    {s:'a',t:'Médico Neurologista (cérebro, nervos e sono)'},
+    {s:'b',t:'Médico Psiquiatra (emoções e comportamentos)'},
+    {s:'c',t:'Psicólogo (sentimentos e comportamentos)'},
+    {s:'d',t:'Terapia ocupacional (atividades da vida diária)'},
+    {s:'e',t:'Reforço escolar ou monitor para aula'},
+    {s:'f',t:'Fonoaudiólogo (engolir ou falar melhor)'},
+    {s:'g',t:'Ortopedista (ossos, músculos e juntas)'},
+    {s:'h',t:'Fisioterapia (respiratória ou força/movimentos)'},
+    {s:'i',t:'Nutricionista (alimentação)'},
+  ],
+  extra:[
+    {id:'escolaridade_mae',label:'Escolaridade da mãe',type:'sel',opts:[{v:'1_4',l:'1º a 4º ano'},{v:'5_9',l:'5º a 9º ano'},{v:'medio',l:'Ensino médio'},{v:'superior',l:'Curso superior'}]},
+  ],
+},
+
+'2_4':{
+  table:'qvtx_2_4',label:'QVTX — Crianças 2 a 4 anos',
+  idFields:[
+    {id:'nome',label:'Nome completo',type:'text',full:true},
+    {id:'data_nascimento',label:'Data de nascimento',type:'date'},
+    {id:'nome_mae',label:'Nome da mãe',type:'text'},
+    {id:'equipe_transplante',label:'Equipe transplantadora',type:'text'},
+    {id:'data_transplante',label:'Data do último transplante',type:'date'},
+    {id:'data_aplicacao',label:'Data de aplicação do questionário',type:'date'},
+    {id:'orgao_transplante',label:'Órgão transplantado',type:'sel',opts:[{v:'rim',l:'Rim'},{v:'figado',l:'Fígado'},{v:'coracao',l:'Coração'},{v:'pulmao',l:'Pulmão'}]},
+    {id:'idade_crianca_anos',label:'Idade da criança (anos)',type:'number'},
+    {id:'consentiu',label:'Consentimento',type:'sel',opts:[{v:'true',l:'Sim — concordou'},{v:'false',l:'Não — recusou'}]},
+    {id:'responsavel_tipo',label:'Responsável',type:'sel',opts:[{v:'mae',l:'Mãe'},{v:'pai',l:'Pai'},{v:'avo',l:'Avó ou avô'},{v:'tutor',l:'Tutor'}]},
+  ],
+  sections:[
+    {title:'Qualidade de Vida — Criança',tag:'1–25',items:[
+      {n:'01',t:'Dorme bem, sem tomar remédio para o sono.'},
+      {n:'02',t:'Sorri quando vê pessoas da casa sorrindo para ele ou ela.'},
+      {n:'03',t:'Tem bastante energia e disposição.'},
+      {n:'04',t:'Fica contente quando sai para passear.'},
+      {n:'05',t:'Mostra ou diz o que quer.'},
+      {n:'06',t:'É muito agitado ou irritado.'},
+      {n:'07',t:'Muitas vezes tosse e se engasga quando come.'},
+      {n:'08',t:'Caminha sem se segurar em pessoas ou móveis.'},
+      {n:'09',t:'Consegue segurar o copo com água e beber sem se molhar.'},
+      {n:'10',t:'Consegue comer com a colher ou o garfo, sem ajuda de outra pessoa.'},
+      {n:'11',t:'Consegue lavar e secar as mãos, sem ajuda.'},
+      {n:'12',t:'Quando tem sede, pede água ou busca água.'},
+      {n:'13',t:'Participa de brincadeiras com outras crianças.'},
+      {n:'14',t:'Vai à creche ou à escola.'},
+      {n:'15',t:'Todos os dias toma os remédios do transplante.'},
+      {n:'16',t:'Toma os remédios nos horários certos.'},
+      {n:'17',t:'Toma a quantidade de remédio que o médico mandou.'},
+      {n:'18',t:'Antes de comer, lava as mãos com água e sabão.'},
+      {n:'19',t:'Come frutas e verduras bem lavadas.',tp:'3',o:['Sim','Não','Se alimenta por sonda'],v:['sim','nao','sonda']},
+      {n:'20',t:'Come carne ou peixe bem cozidos.',tp:'3',o:['Sim','Não','Se alimenta por sonda'],v:['sim','nao','sonda']},
+      {n:'21',t:'Bebe água várias vezes por dia.'},
+      {n:'22',t:'Escovamos os dentes dela todos os dias.'},
+      {n:'23',t:'Usa protetor solar na pele todos os dias.'},
+      {n:'24',t:'Cuidamos para a criança transplantada não pegar doenças de pessoas.'},
+      {n:'25',t:'Cuidamos para a criança não pegar doenças de animais.'},
+    ]},
+    {title:'Atendimento',tag:'26–50',items:[
+      {n:'26',t:'Foi difícil conseguir a primeira consulta com o médico do transplante.'},
+      {n:'27',t:'Foi difícil conseguir exames para entrar na lista do transplante.'},
+      {n:'28',t:'Mudamos de cidade para estar perto do hospital do transplante.'},
+      {n:'29',t:'Foi difícil chegar na hora marcada para o transplante.'},
+      {n:'30',t:'O quarto e o banheiro do hospital eram limpos e as coisas funcionavam.'},
+      {n:'31',t:'No hospital explicaram como cuidar da saúde.'},
+      {n:'32',t:'No hospital explicaram como dar os remédios e os horários.'},
+      {n:'33',t:'Explicaram quando tem que ir para a emergência.'},
+      {n:'34',t:'Nas consultas nos ouvem, se interessam e tiram nossas dúvidas.'},
+      {n:'35',t:'Se for urgente, temos como falar com os médicos ou mandar mensagem.'},
+      {n:'36',t:'Viajamos para ir às consultas de revisão do transplante.'},
+      {n:'37',t:'É um problema conseguir transporte para consultar.'},
+      {n:'38',t:'Ganhamos passagem ou transporte de graça para consultar.'},
+      {n:'39',t:'Dormimos em casas de apoio ou de conhecidos quando viemos consultar.'},
+      {n:'40',t:'Recebemos do governo dinheiro para comer e ter onde dormir nas consultas.'},
+      {n:'41',t:'Sempre conseguimos de graça todos os remédios para evitar rejeição.'},
+      {n:'42',t:'Temos que comprar alguns dos outros remédios.'},
+      {n:'43',t:'Conseguimos protetor solar de graça.'},
+      {n:'44',t:'A criança vai ao dentista pelo menos uma vez por ano.'},
+      {n:'45',t:'Vai ao médico examinar a pele pelo menos uma vez por ano.'},
+      {n:'46',t:'Faz exame da visão pelo menos uma vez por ano.'},
+      {n:'47',t:'Vai a todas as consultas marcadas para revisar o transplante.'},
+      {n:'48',t:'Quando consulta com outros médicos, dizemos que é transplantada.'},
+      {n:'49',t:'Se estiver na emergência, vamos avisar os médicos do transplante.'},
+      {n:'50',t:'Neste mês ou no mês passado, ficou no hospital mais de uma semana.'},
+    ]},
+  ],
+  nk:'51',needs:[
+    {s:'a',t:'Médico Neurologista (cérebro, nervos e sono)'},
+    {s:'b',t:'Médico Psiquiatra (emoções e comportamentos)'},
+    {s:'c',t:'Psicólogo (sentimentos e comportamentos)'},
+    {s:'d',t:'Terapia ocupacional (atividades da vida diária)'},
+    {s:'e',t:'Monitor para aula ou reforço escolar'},
+    {s:'f',t:'Fonoaudiólogo (falar melhor ou engolir)'},
+    {s:'g',t:'Ortopedista (ossos, músculos e juntas)'},
+    {s:'h',t:'Fisioterapia (respiratória ou força/movimento)'},
+    {s:'i',t:'Nutricionista (alimentação)'},
+  ],
+  extra:[
+    {id:'escolaridade_mae',label:'52. Escolaridade da mãe',type:'sel',opts:[{v:'1_4',l:'1º a 4º ano'},{v:'5_9',l:'5º a 9º ano'},{v:'medio',l:'Ensino médio'},{v:'superior',l:'Curso superior'}]},
+  ],
+},
+};
+
+// STATE
+let ci='adultos',ans={},ldb=[],fi=[],fx=0;
+
+function setInst(k){
+  ci=k;ans={};
+  document.querySelectorAll('.ibtn').forEach((b,i)=>b.classList.toggle('active',['adultos','5_17','2_4'][i]===k));
+  render();
+}
+
+function render(){
+  const I=INST[ci],mc=document.getElementById('mc');
+  let h=`<div class="ftit">${I.label}</div>
+  <div class="fsub">Preencha identificação e marque cada resposta. Atalhos: <kbd>S</kbd>=Sim <kbd>N</kbd>=Não <kbd>3</kbd>=3ª opção</div>
+  <div class="ca">
+    <div class="ci"><strong id="cr">0</strong>Respondidos</div>
+    <div class="ci"><strong id="cs">0</strong>Sim</div>
+    <div class="ci"><strong id="cn">0</strong>Não</div>
+    <div class="ci"><strong id="ct">0</strong>Total</div>
+  </div>
+  <div class="section"><div class="shd">📋 Identificação <span class="tag">dados do paciente</span></div><div class="idg">`;
+
+  for(const f of I.idFields){
+    h+=`<div class="fg${f.full?' full':''}"><label>${f.label}</label>`;
+    if(f.type==='text'||f.type==='date'||f.type==='number'){
+      h+=`<input type="${f.type}" id="id_${f.id}" onchange="sa('${f.id}',this.value)" ${f.type==='number'?'step="0.1" min="2" max="4"':''}>`;
+    }else if(f.type==='sel'){
+      h+=`<select id="id_${f.id}" onchange="sa('${f.id}',this.value)"><option value="">— selecionar —</option>`;
+      for(const o of f.opts)h+=`<option value="${o.v}">${o.l}</option>`;
+      h+=`</select>`;
+    }else if(f.type==='bool'){
+      h+=`<select id="id_${f.id}" onchange="sa('${f.id}',this.value==='true')"><option value="">—</option><option value="true">Sim</option><option value="false">Não</option></select>`;
+    }
+    h+=`</div>`;
+  }
+  h+=`</div></div>`;
+
+  for(const sec of I.sections){
+    h+=`<div class="section"><div class="shd">📝 ${sec.title} <span class="tag">${sec.tag}</span></div>`;
+    for(const it of sec.items){
+      const k=`q${it.n}`;
+      if(it.tp==='3'){
+        h+=`<div class="qi" data-key="${k}" tabindex="-1"><span class="qn">${it.n}</span><span class="qt">${it.t}</span><div class="qo">`;
+        it.o.forEach((lb,i)=>{
+          const c=i===0?'sim':(i===1?'nao':'neu');
+          h+=`<button class="ob ${c}" data-key="${k}" data-val="${it.v[i]}" onclick="pick('${k}','${it.v[i]}',this)">${lb}</button>`;
+        });
+        h+=`</div></div>`;
+      }else{
+        h+=`<div class="qi" data-key="${k}" tabindex="-1"><span class="qn">${it.n}</span><span class="qt">${it.t}</span>
+        <div class="qo">
+          <button class="ob sim" data-key="${k}" data-val="true" onclick="pick('${k}',true,this)">Sim</button>
+          <button class="ob nao" data-key="${k}" data-val="false" onclick="pick('${k}',false,this)">Não</button>
+        </div></div>`;
+      }
+    }
+    h+=`</div>`;
+  }
+
+  if(I.needs){
+    h+=`<div class="section"><div class="shd">🔧 Necessidades de Atenção — item ${I.nk} <span class="tag">Tem · Precisa · Não precisa</span></div>`;
+    for(const nd of I.needs){
+      const k=`q${I.nk}${nd.s}`;
+      h+=`<div class="ni" data-key="${k}"><div class="nt"><strong>${I.nk}${nd.s.toUpperCase()}.</strong>${nd.t}</div>
+      <div class="no">
+        <button class="ob sim" data-key="${k}" data-val="tem" onclick="pick('${k}','tem',this)">Tem</button>
+        <button class="ob nao" data-key="${k}" data-val="precisa" onclick="pick('${k}','precisa',this)">Precisa</button>
+        <button class="ob neu" data-key="${k}" data-val="nao_precisa" onclick="pick('${k}','nao_precisa',this)">Não precisa</button>
+      </div></div>`;
+    }
+    h+=`</div>`;
+  }
+
+  if(I.extra&&I.extra.length){
+    h+=`<div class="section"><div class="shd">📊 Dados Complementares</div><div class="idg">`;
+    for(const f of I.extra){
+      h+=`<div class="fg full"><label>${f.label}</label>`;
+      if(f.type==='sel'){
+        h+=`<select id="ex_${f.id}" onchange="sa('${f.id}',this.value)"><option value="">—</option>`;
+        for(const o of f.opts)h+=`<option value="${o.v}">${o.l}</option>`;
+        h+=`</select>`;
+      }else if(f.type==='bool'){
+        h+=`<select id="ex_${f.id}" onchange="sa('${f.id}',this.value==='true')"><option value="">—</option><option value="true">Sim</option><option value="false">Não</option></select>`;
+      }else if(f.type==='mck'){
+        h+=`<div style="display:flex;gap:8px;flex-wrap:wrap;padding:4px 0">`;
+        for(const o of f.opts)h+=`<label style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:400"><input type="checkbox" value="${o}" onchange="mck('${f.id}')">${o}</label>`;
+        h+=`</div>`;
+      }
+      h+=`</div>`;
+    }
+    h+=`</div></div>`;
+  }
+  h+=`<div style="height:80px"></div>`;
+  mc.innerHTML=h;
+  buildFL();updC();
+}
+
+function pick(k,v,btn){
+  ans[k]=v;
+  document.querySelectorAll(`[data-key="${k}"]`).forEach(b=>{if(b.tagName==='BUTTON')b.classList.remove('sel')});
+  btn.classList.add('sel');
+  updC();
+  const idx=fi.indexOf(k);
+  if(idx>=0&&idx<fi.length-1)setTimeout(()=>focusI(idx+1),80);
+}
+
+function sa(k,v){ans[k]=v;}
+function mck(fid){
+  const vals=[...document.querySelectorAll(`[onchange="mck('${fid}')"]`)].filter(c=>c.checked).map(c=>c.value);
+  ans[fid]=vals;
+}
+
+function buildFL(){
+  fi=[];const I=INST[ci];
+  for(const sec of I.sections)for(const it of sec.items)fi.push(`q${it.n}`);
+  if(I.needs)for(const nd of I.needs)fi.push(`q${I.nk}${nd.s}`);
+}
+
+function focusI(idx){
+  if(idx<0||idx>=fi.length)return;
+  fx=idx;
+  const el=document.querySelector(`[data-key="${fi[idx]}"]`);
+  if(el){el.focus();el.scrollIntoView({behavior:'smooth',block:'center'});}
+}
+
+document.addEventListener('click',e=>{
+  const el=e.target.closest('[data-key]');
+  if(el){const idx=fi.indexOf(el.dataset.key);if(idx>=0)fx=idx;}
+});
+
+document.addEventListener('keydown',e=>{
+  if(['INPUT','SELECT','TEXTAREA'].includes(e.target.tagName))return;
+  const k=fi[fx];if(!k)return;
+  if(e.ctrlKey&&e.key.toLowerCase()==='s'){e.preventDefault();saveRec();return;}
+  if(e.ctrlKey&&e.key.toLowerCase()==='n'){e.preventDefault();newRec();return;}
+  if(e.key.toLowerCase()==='s'){
+    const b=document.querySelector(`[data-key="${k}"][data-val="true"],[data-key="${k}"][data-val="sim"],[data-key="${k}"][data-val="tem"]`);
+    if(b){pick(k,b.dataset.val,b);e.preventDefault();}
+  }else if(e.key.toLowerCase()==='n'){
+    const b=document.querySelector(`[data-key="${k}"][data-val="false"],[data-key="${k}"][data-val="nao"],[data-key="${k}"][data-val="precisa"]`);
+    if(b){pick(k,b.dataset.val,b);e.preventDefault();}
+  }else if(e.key==='3'||e.key.toLowerCase()==='p'){
+    const b=document.querySelector(`[data-key="${k}"][data-val="nao_sei"],[data-key="${k}"][data-val="sonda"],[data-key="${k}"][data-val="nao_vai_escola"],[data-key="${k}"][data-val="nao_tenho_amigo"],[data-key="${k}"][data-val="nao_procurou"],[data-key="${k}"][data-val="nao_precisa"]`);
+    if(b){pick(k,b.dataset.val,b);e.preventDefault();}
+  }else if(e.key==='Tab'&&!e.shiftKey){e.preventDefault();focusI(fx+1);}
+  else if(e.key==='Tab'&&e.shiftKey){e.preventDefault();focusI(fx-1);}
+});
+
+function updC(){
+  const I=INST[ci];let tot=0,resp=0,sim=0,nao=0;
+  for(const sec of I.sections)for(const it of sec.items){
+    tot++;const v=ans[`q${it.n}`];
+    if(v!==undefined&&v!==null&&v!==''){resp++;if(v===true||v==='sim'||v==='tem')sim++;if(v===false||v==='nao'||v==='precisa')nao++;}
+  }
+  if(I.needs)for(const nd of I.needs){tot++;if(ans[`q${I.nk}${nd.s}`])resp++;}
+  document.getElementById('cr').textContent=resp;
+  document.getElementById('cs').textContent=sim;
+  document.getElementById('cn').textContent=nao;
+  document.getElementById('ct').textContent=tot;
+  const pct=tot>0?Math.round(resp/tot*100):0;
+  document.getElementById('pbar').style.width=pct+'%';
+  document.getElementById('ptxt').textContent=`${resp} de ${tot} respondidos (${pct}%)`;
+}
+
+async function saveRec(){
+  const I=INST[ci];
+  const url=document.getElementById('sburl').value.trim();
+  const key=document.getElementById('sbkey').value.trim();
+  const op=(document.getElementById('opname').value||'').toUpperCase();
+  const payload={operador:op};
+  for(const f of I.idFields){
+    const el=document.getElementById(`id_${f.id}`);
+    if(el)payload[f.id]=el.value||null;
+  }
+  if(payload.consentiu==='true')payload.consentiu=true;
+  if(payload.consentiu==='false')payload.consentiu=false;
+  Object.assign(payload,ans);
+  if(I.extra)for(const f of I.extra){const el=document.getElementById(`ex_${f.id}`);if(el&&f.type==='sel')payload[f.id]=el.value||null;}
+  ldb.push({...payload,_table:I.table,_at:new Date().toISOString()});
+
+  if(url&&key){
+    try{
+      const res=await fetch(`${url}/rest/v1/${I.table}`,{
+        method:'POST',
+        headers:{'Content-Type':'application/json','apikey':key,'Authorization':`Bearer ${key}`,'Prefer':'return=minimal'},
+        body:JSON.stringify(payload)
+      });
+      if(!res.ok)throw new Error(await res.text());
+      toast(`✅ Salvo no Supabase (${I.table})`,false);
+    }catch(err){toast(`⚠️ Supabase falhou — salvo localmente. ${err.message}`,true);}
+  }else{toast('💾 Salvo localmente (Supabase não configurado)',false);}
+  document.getElementById('ss').textContent=`Último save: ${new Date().toLocaleTimeString('pt-BR')} · ${ldb.length} registro(s) nesta sessão`;
+}
+
+function newRec(){
+  if(Object.keys(ans).length>0&&!confirm('Limpar formulário e iniciar novo registro?'))return;
+  clearForm();
+}
+
+function clearForm(){ans={};render();toast('Formulário limpo',false);}
+
+function exportCSV(){
+  if(!ldb.length){toast('Nenhum registro nesta sessão',true);return;}
+  const keys=[...new Set(ldb.flatMap(r=>Object.keys(r)))];
+  const rows=[keys.join(',')];
+  for(const r of ldb){
+    rows.push(keys.map(k=>{
+      let v=r[k];
+      if(v===null||v===undefined)return'';
+      if(Array.isArray(v))v=v.join('|');
+      v=String(v).replace(/"/g,'""');
+      return`"${v}"`;
+    }).join(','));
+  }
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['\uFEFF'+rows.join('\n')],{type:'text/csv;charset=utf-8'}));
+  a.download=`qvtx_${ci}_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  toast(`CSV exportado — ${ldb.length} registros`,false);
+}
+
+async function testConn(){
+  const url=document.getElementById('sburl').value.trim();
+  const key=document.getElementById('sbkey').value.trim();
+  const st=document.getElementById('cst');
+  if(!url||!key){st.innerHTML='<span class="sdot derr"></span>URL ou key vazios';return;}
+  st.innerHTML='<span class="sdot doff"></span>Testando...';
+  try{
+    // Passo 1: verificar conectividade básica com o endpoint raiz da API
+    const res1=await fetch(`${url}/rest/v1/`,{headers:{'apikey':key,'Authorization':`Bearer ${key}`}});
+    if(!res1.ok && res1.status!==200){
+      throw new Error(`Servidor inacessível (HTTP ${res1.status}). Verifique a URL.`);
+    }
+    // Passo 2: verificar se as tabelas existem
+    const res2=await fetch(
+      `${url}/rest/v1/rpc/version`,
+      {method:'POST',headers:{'apikey':key,'Authorization':`Bearer ${key}`,'Content-Type':'application/json'},body:'{}'}
+    );
+    // Passo 3: checar tabela qvtx_adultos especificamente
+    const res3=await fetch(`${url}/rest/v1/qvtx_adultos?limit=0`,{
+      headers:{'apikey':key,'Authorization':`Bearer ${key}`,'Accept':'application/json'}
+    });
+    if(res3.status===200||res3.status===206){
+      st.innerHTML='<span class="sdot dok"></span>Conectado — tabelas OK';
+      toast('✅ Supabase OK — tabelas encontradas',false);
+    } else if(res3.status===404){
+      st.innerHTML='<span class="sdot warn" style="background:var(--ouro)"></span>Conectado, mas tabelas não encontradas';
+      toast('⚠️ Conexão OK, mas tabelas ausentes. Execute o qvtx_schema.sql no SQL Editor.',true);
+    } else if(res3.status===401||res3.status===403){
+      st.innerHTML='<span class="sdot warn" style="background:var(--ouro)"></span>Conectado — RLS bloqueando';
+      toast('⚠️ Conexão OK, mas RLS ativo. Desative o RLS nas 3 tabelas.',true);
+    } else {
+      st.innerHTML=`<span class="sdot dok"></span>Conectado (HTTP ${res3.status})`;
+      toast(`Supabase respondeu HTTP ${res3.status}`,false);
+    }
+  }catch(e){
+    st.innerHTML=`<span class="sdot derr"></span>Erro: ${e.message}`;
+    toast('❌ '+e.message,true);
+  }
+}
+
+function toast(msg,err=false){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='show'+(err?' err':'');
+  clearTimeout(t._t);t._t=setTimeout(()=>{t.className='';},3500);
+}
+
+render();focusI(0);
+
+// =============================================================
+// PERSISTÊNCIA DE CREDENCIAIS — localStorage
+// =============================================================
+const LS_KEY = 'qvtx_creds';
+
+function loadCreds(){
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if(!raw) return;
+    const c = JSON.parse(raw);
+    const urlEl   = document.getElementById('sburl');
+    const keyEl   = document.getElementById('sbkey');
+    const opEl    = document.getElementById('opname');
+    const chkEl   = document.getElementById('chk-lembrar');
+    if(c.url && urlEl)  urlEl.value  = c.url;
+    if(c.key && keyEl)  keyEl.value  = c.key;
+    if(c.op  && opEl)   opEl.value   = c.op;
+    if(chkEl) chkEl.checked = true;
+    // Atualizar status visual se credenciais carregadas
+    if(c.url && c.key){
+      const st = document.getElementById('cst');
+      if(st) st.innerHTML = '<span class="sdot" style="background:var(--ouro)"></span>Credenciais carregadas — teste a conexão';
+    }
+  } catch(e){ /* localStorage indisponível ou JSON inválido */ }
+}
+
+function saveCreds(){
+  try {
+    const url = document.getElementById('sburl').value.trim();
+    const key = document.getElementById('sbkey').value.trim();
+    const op  = document.getElementById('opname').value.trim();
+    localStorage.setItem(LS_KEY, JSON.stringify({url, key, op}));
+  } catch(e){}
+}
+
+function clearCreds(){
+  try { localStorage.removeItem(LS_KEY); } catch(e){}
+}
+
+function autoSaveCreds(){
+  // Só salva automaticamente se o checkbox estiver marcado
+  const chk = document.getElementById('chk-lembrar');
+  if(chk && chk.checked) saveCreds();
+}
+
+function toggleLembrar(){
+  const chk = document.getElementById('chk-lembrar');
+  if(chk && chk.checked){
+    saveCreds();
+    toast('✅ Credenciais salvas neste navegador', false);
+  } else {
+    clearCreds();
+    toast('🗑 Credenciais removidas do navegador', false);
+  }
+}
+
+// Carregar credenciais salvas ao abrir a página
+loadCreds();
+
+// =============================================================
+// BANCO LOCAL — separado por instrumento
+// =============================================================
+const banco = { adultos:[], '5_17':[], '2_4':[] };
+
+function updDBPanel(){
+  const tot = banco.adultos.length + banco['5_17'].length + banco['2_4'].length;
+  document.getElementById('db-adultos').textContent = banco.adultos.length;
+  document.getElementById('db-5_17').textContent    = banco['5_17'].length;
+  document.getElementById('db-2_4').textContent     = banco['2_4'].length;
+  document.getElementById('db-total').textContent   = tot;
+}
+
+// Exportar banco completo (todos os instrumentos, um arquivo por instrumento)
+function exportCSVAll(){
+  let exported = 0;
+  for(const [inst, rows] of Object.entries(banco)){
+    if(!rows.length) continue;
+    const keys = [...new Set(rows.flatMap(r=>Object.keys(r)))];
+    const lines = [keys.join(',')];
+    for(const r of rows){
+      lines.push(keys.map(k=>{
+        let v = r[k];
+        if(v===null||v===undefined) return '';
+        if(Array.isArray(v)) v = v.join('|');
+        v = String(v).replace(/"/g,'""');
+        return `"${v}"`;
+      }).join(','));
+    }
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob(['﻿'+lines.join('
+')],{type:'text/csv;charset=utf-8'}));
+    a.download = `qvtx_${inst}_banco_${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();
+    exported++;
+  }
+  if(!exported) toast('Banco vazio — nenhum registro para exportar', true);
+  else toast(`${exported} arquivo(s) CSV exportado(s)`, false);
+}
+
+// Também popula banco ao salvar registro manual
+const _origSaveRec = saveRec;
+saveRec = async function(){
+  await _origSaveRec();
+  // O registro mais recente está em ldb — espelhar no banco
+  if(ldb.length){
+    const last = ldb[ldb.length-1];
+    const inst = last._table === 'qvtx_adultos' ? 'adultos'
+               : last._table === 'qvtx_5_17'    ? '5_17'
+               : '2_4';
+    banco[inst].push(last);
+    updDBPanel();
+  }
+};
+
+// =============================================================
+// IMPORTAÇÃO CSV
+// =============================================================
+let importQueue = [];   // [{filename, instrumento, headers, rows, parsed}]
+
+function openImport(){
+  document.getElementById('modal-bg').classList.add('open');
+  document.getElementById('import-preview').style.display = 'none';
+  document.getElementById('import-preview').innerHTML = '';
+  document.getElementById('btn-import-exec').style.display = 'none';
+  document.getElementById('import-status').textContent = '';
+  document.getElementById('dropzone').style.display = 'block';
+  importQueue = [];
+}
+
+function closeImport(){ document.getElementById('modal-bg').classList.remove('open'); }
+function closeImportOutside(e){ if(e.target.id==='modal-bg') closeImport(); }
+
+function dzOver(e){ e.preventDefault(); document.getElementById('dropzone').classList.add('over'); }
+function dzLeave(){ document.getElementById('dropzone').classList.remove('over'); }
+function dzDrop(e){
+  e.preventDefault(); dzLeave();
+  onFileSelected({ target: { files: e.dataTransfer.files } });
+}
+
+function onFileSelected(e){
+  const files = [...e.target.files];
+  if(!files.length) return;
+  importQueue = [];
+  document.getElementById('import-preview').innerHTML = '<p style="padding:12px;color:#666;font-size:13px">⏳ Lendo arquivos...</p>';
+  document.getElementById('import-preview').style.display = 'block';
+  document.getElementById('dropzone').style.display = 'none';
+
+  const promises = files.map(f => readCSV(f));
+  Promise.all(promises).then(results => {
+    importQueue = results.filter(r=>r!==null);
+    renderImportPreview();
+  });
+  // Limpar input para permitir reimport do mesmo arquivo
+  e.target.value = '';
+}
+
+function readCSV(file){
+  return new Promise(resolve => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const text = e.target.result.replace(/^﻿/,''); // remove BOM
+        const lines = text.split(/
+?
+/).filter(l=>l.trim());
+        if(lines.length < 2){ resolve(null); return; }
+
+        // Parse cabeçalho
+        const headers = parseCSVLine(lines[0]);
+        const rows = lines.slice(1).map(l => {
+          const vals = parseCSVLine(l);
+          const obj = {};
+          headers.forEach((h,i) => obj[h] = vals[i] ?? '');
+          return obj;
+        }).filter(r => Object.values(r).some(v=>v!==''));
+
+        // Detectar instrumento pelo cabeçalho
+        const instrumento = detectInstrumento(headers);
+
+        resolve({ filename: file.name, instrumento, headers, rows, valid: instrumento !== null });
+      } catch(err) {
+        resolve({ filename: file.name, instrumento: null, headers:[], rows:[], valid:false, error: err.message });
+      }
+    };
+    reader.onerror = () => resolve(null);
+    reader.readAsText(file, 'UTF-8');
+  });
+}
+
+function parseCSVLine(line){
+  const result = [];
+  let cur = '', inQ = false;
+  for(let i=0; i<line.length; i++){
+    const c = line[i];
+    if(c==='"'){
+      if(inQ && line[i+1]==='"'){ cur+='"'; i++; }
+      else inQ = !inQ;
+    } else if(c===',' && !inQ){
+      result.push(cur.trim()); cur='';
+    } else cur += c;
+  }
+  result.push(cur.trim());
+  return result;
+}
+
+function detectInstrumento(headers){
+  const h = headers.join(',').toLowerCase();
+  // Sinais discriminantes por instrumento
+  if(h.includes('q52_orgao') || h.includes('q53_dialise') || h.includes('q56_escolaridade')) return 'adultos';
+  if(h.includes('nivel_escolar') || h.includes('q49a')) return '5_17';
+  if(h.includes('idade_crianca') || h.includes('q51a')) return '2_4';
+  // Fallback: tentar pelo _table se exportado por esta interface
+  if(h.includes('qvtx_adultos')) return 'adultos';
+  if(h.includes('qvtx_5_17'))    return '5_17';
+  if(h.includes('qvtx_2_4'))     return '2_4';
+  return null;
+}
+
+function instrLabel(k){
+  return k==='adultos'?'Adultos (≥18 anos)':k==='5_17'?'5–17 anos':'2–4 anos';
+}
+
+function renderImportPreview(){
+  if(!importQueue.length){
+    document.getElementById('import-preview').innerHTML = '<p style="padding:12px;color:red">Nenhum arquivo válido lido.</p>';
+    return;
+  }
+
+  const totalRows = importQueue.reduce((a,f)=>a+f.rows.length,0);
+  const valid     = importQueue.filter(f=>f.valid).length;
+  const invalid   = importQueue.length - valid;
+
+  let html = `<div class="info-grid" style="margin-top:12px">
+    <div class="info-card"><div class="v">${importQueue.length}</div><div class="l">Arquivo(s) lido(s)</div></div>
+    <div class="info-card"><div class="v">${totalRows}</div><div class="l">Registros totais</div></div>
+    <div class="info-card"><div class="v" style="color:${invalid?'var(--vermelho)':'var(--verde)'}">${valid}</div><div class="l">Instrumentos detectados</div></div>
+    <div class="info-card"><div class="v" style="color:${invalid?'var(--vermelho)':'var(--verde)'}">${invalid}</div><div class="l">Sem instrumento detectado</div></div>
+  </div>`;
+
+  for(const f of importQueue){
+    const tag = f.valid
+      ? `<span class="stag ok">✓ ${instrLabel(f.instrumento)}</span>`
+      : `<span class="stag err">✗ Instrumento não detectado</span>`;
+
+    html += `<div style="margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <strong style="font-size:13px">📄 ${f.filename}</strong>
+        ${tag}
+        <span class="stag warn" style="margin-left:auto">${f.rows.length} registros</span>
+      </div>`;
+
+    if(f.valid && f.rows.length){
+      // Preview das primeiras 5 linhas, primeiras 8 colunas relevantes
+      const previewCols = f.headers.filter(h=>!h.startsWith('_')).slice(0,8);
+      html += `<div class="prev-wrap"><table><tr>`;
+      previewCols.forEach(c => html += `<th>${c}</th>`);
+      html += `<th>...</th></tr>`;
+      f.rows.slice(0,5).forEach(r => {
+        html += '<tr>';
+        previewCols.forEach(c => {
+          const v = r[c]||'';
+          html += `<td title="${v}">${v.length>22?v.slice(0,22)+'…':v}</td>`;
+        });
+        html += '<td style="color:#aaa">…</td></tr>';
+      });
+      if(f.rows.length>5) html += `<tr><td colspan="${previewCols.length+1}" style="color:#999;text-align:center;padding:4px">… mais ${f.rows.length-5} registros</td></tr>`;
+      html += '</table></div>';
+    } else if(!f.valid){
+      html += `<div style="font-size:12px;color:var(--vermelho);padding:6px 0">
+        ⚠ Cabeçalho não reconhecido. Colunas encontradas: <em>${f.headers.slice(0,6).join(', ')}...</em><br>
+        O arquivo deve ser exportado por esta interface ou ter as mesmas colunas do schema QVTX.
+      </div>`;
+    }
+    html += '</div><hr style="margin:10px 0;border-color:#eee">';
+  }
+
+  const hasValid = importQueue.some(f=>f.valid && f.rows.length>0);
+  document.getElementById('import-preview').innerHTML = html;
+  document.getElementById('import-preview').style.display = 'block';
+  document.getElementById('btn-import-exec').style.display = hasValid ? 'inline-block' : 'none';
+  document.getElementById('import-status').textContent = hasValid
+    ? `${importQueue.filter(f=>f.valid).reduce((a,f)=>a+f.rows.length,0)} registros prontos para importar`
+    : 'Nenhum arquivo válido para importar';
+}
+
+// =============================================================
+// EXECUTAR IMPORTAÇÃO
+// =============================================================
+async function executeImport(){
+  const url = document.getElementById('sburl').value.trim();
+  const key = document.getElementById('sbkey').value.trim();
+  const usarSupabase = !!(url && key);
+
+  const validFiles = importQueue.filter(f=>f.valid && f.rows.length>0);
+  if(!validFiles.length){ toast('Nenhum arquivo válido', true); return; }
+
+  // Substituir conteúdo do modal por progress
+  const body = document.getElementById('modal-body');
+  let totalRecs = validFiles.reduce((a,f)=>a+f.rows.length,0);
+  let done=0, erros=0;
+
+  body.innerHTML = `
+    <div style="padding:8px 0">
+      <strong style="font-size:14px">Importando ${totalRecs} registros${usarSupabase?' → Supabase':' → banco local'}...</strong>
+      <div class="up-bar-wrap"><div class="up-bar" id="up-bar" style="width:0%"></div></div>
+      <div id="up-pct" style="font-size:12px;color:#666;margin-bottom:8px">0 de ${totalRecs}</div>
+      <div class="up-log" id="up-log"></div>
+    </div>`;
+  document.getElementById('btn-import-exec').style.display = 'none';
+
+  const log = (msg, isErr=false) => {
+    const el = document.getElementById('up-log');
+    if(!el) return;
+    const line = document.createElement('div');
+    line.style.color = isErr ? 'var(--vermelho)' : '#555';
+    line.textContent = `[${new Date().toLocaleTimeString('pt-BR')}] ${msg}`;
+    el.appendChild(line);
+    el.scrollTop = el.scrollHeight;
+  };
+
+  const updProg = () => {
+    const pct = Math.round(done/totalRecs*100);
+    const bar = document.getElementById('up-bar');
+    const pctEl = document.getElementById('up-pct');
+    if(bar) bar.style.width = pct+'%';
+    if(pctEl) pctEl.textContent = `${done} de ${totalRecs} (${pct}%)`;
+  };
+
+  for(const f of validFiles){
+    log(`Processando ${f.filename} — ${f.rows.length} registros (${instrLabel(f.instrumento)})`);
+    const tableName = INST[f.instrumento].table;
+
+    // Processar em lotes de 50 para Supabase
+    const BATCH = 50;
+    for(let i=0; i<f.rows.length; i+=BATCH){
+      const batch = f.rows.slice(i, i+BATCH).map(r => cleanRow(r));
+
+      // Adicionar ao banco local
+      banco[f.instrumento].push(...batch);
+
+      if(usarSupabase){
+        try{
+          const res = await fetch(`${url}/rest/v1/${tableName}`, {
+            method: 'POST',
+            headers:{
+              'Content-Type':'application/json',
+              'apikey': key,
+              'Authorization': `Bearer ${key}`,
+              'Prefer': 'return=minimal'
+            },
+            body: JSON.stringify(batch)
+          });
+          if(!res.ok){
+            const errText = await res.text();
+            throw new Error(`HTTP ${res.status}: ${errText.slice(0,120)}`);
+          }
+          log(`  Lote ${Math.floor(i/BATCH)+1}: ${batch.length} registros enviados ao Supabase ✓`);
+        }catch(err){
+          erros += batch.length;
+          log(`  Lote ${Math.floor(i/BATCH)+1} FALHOU: ${err.message}`, true);
+        }
+      }
+
+      done += batch.length;
+      updProg();
+      // Pequena pausa para não bloquear a UI
+      await new Promise(r=>setTimeout(r,10));
+    }
+    log(`✓ ${f.filename} concluído`);
+  }
+
+  updDBPanel();
+
+  const resumo = `✅ Importação concluída: ${done - erros} registros adicionados ao banco` +
+    (erros ? ` · ⚠ ${erros} com erro` : '') +
+    (usarSupabase ? ' (Supabase + local)' : ' (somente local)');
+  log(resumo);
+  document.getElementById('import-status').textContent = resumo;
+
+  // Botão para fechar
+  const ft = document.getElementById('modal-ft') || document.querySelector('.modal-ft');
+  const closeBtn = document.createElement('button');
+  closeBtn.className='blg bsave';
+  closeBtn.style='font-size:12px;padding:8px 16px';
+  closeBtn.textContent='✓ Fechar';
+  closeBtn.onclick=closeImport;
+  if(ft) ft.insertBefore(closeBtn, ft.firstChild);
+
+  toast(resumo.replace('✅ ',''), erros>0);
+}
+
+// Limpar e tipar valores do CSV para o banco
+function cleanRow(r){
+  const out = {};
+  for(const [k,v] of Object.entries(r)){
+    if(k.startsWith('_')) continue; // metadados internos
+    if(v==='' || v===null || v===undefined){ out[k]=null; continue; }
+    // Colunas booleanas
+    if(v==='true')  { out[k]=true;  continue; }
+    if(v==='false') { out[k]=false; continue; }
+    // Arrays (pipe-separated)
+    if(typeof v==='string' && v.includes('|')){ out[k]=v.split('|'); continue; }
+    out[k]=v;
+  }
+  return out;
+}
+
+</script></body></html>
