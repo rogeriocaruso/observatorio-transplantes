@@ -62,16 +62,20 @@ header{background:var(--pri);color:#fff;padding:10px 20px;display:flex;align-ite
 .qi{display:flex;align-items:center;padding:8px 13px;gap:10px;border-bottom:1px solid #f0f0f0}
 .qi:last-child{border-bottom:none}
 .qi.foc{background:#fafff8}
-.qn{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:800;color:var(--pri);min-width:26px;opacity:.55}
+.qn{font-family:'Montserrat',sans-serif;font-size:17px;font-weight:800;color:var(--pri);min-width:38px;text-align:center}
 .qt{flex:1;font-size:13px;line-height:1.4}
-.qo{display:flex;gap:4px;flex-shrink:0}
-.ob{border:1.5px solid var(--brd);background:#fff;padding:4px 11px;border-radius:5px;cursor:pointer;font-size:12px;font-weight:600;white-space:nowrap}
-.ob.s{border-color:#aad4b0;color:#1e6b2e}
-.ob.n{border-color:#f0b8b8;color:#9b1c1c}
+.qt-sp{flex:1}
+.qt-mini{flex:1;font-size:11px;color:#888;font-style:italic}
+.qo{display:flex;gap:5px;flex-shrink:0}
+.ob{border:2px solid var(--brd);background:#fff;padding:7px 15px;border-radius:5px;cursor:pointer;font-size:13px;font-weight:700;white-space:nowrap;transition:all .1s}
+.ob.s{border-color:#8bc995;color:#1e6b2e}
+.ob.n{border-color:#e89b9b;color:#9b1c1c}
 .ob.t{border-color:#b8ccd8;color:#4a6072}
-.ob.s.on{background:#d4edda;border-color:#1e6b2e;color:#1e6b2e}
-.ob.n.on{background:#f8d7da;border-color:#9b1c1c;color:#9b1c1c}
-.ob.t.on{background:#d6e4ef;border-color:#4a6072;color:#4a6072}
+.ob.r{border-color:#e8d08a;color:#8a6d1a}
+.ob.s.on{background:#2d6e35;border-color:#2d6e35;color:#fff}
+.ob.n.on{background:#b22222;border-color:#b22222;color:#fff}
+.ob.t.on{background:#4a6072;border-color:#4a6072;color:#fff}
+.ob.r.on{background:#c9a227;border-color:#c9a227;color:#fff}
 /* NEEDS */
 .ni{display:grid;grid-template-columns:1fr auto;align-items:center;padding:7px 13px;border-bottom:1px solid #f0f0f0;gap:8px}
 .ni:last-child{border-bottom:none}
@@ -195,9 +199,10 @@ kbd{background:#f0f0f0;border:1px solid #ccc;border-radius:3px;padding:1px 4px;f
 </div><!-- .app -->
 
 <div class="kbar">
-  <span><kbd>S</kbd> Sim/Tem</span>
-  <span><kbd>N</kbd> Não/Precisa</span>
-  <span><kbd>3</kbd> 3ª opção</span>
+  <span><kbd>S</kbd> SIM/Tem</span>
+  <span><kbd>N</kbd> NÃO/Precisa</span>
+  <span><kbd>0</kbd> ou <kbd>Espaço</kbd> Ñ RES</span>
+  <span><kbd>3</kbd> 3ª opção especial</span>
   <span><kbd>Tab</kbd> Próximo</span>
   <span><kbd>Shift+Tab</kbd> Anterior</span>
   <span><kbd>Ctrl+S</kbd> Salvar</span>
@@ -535,11 +540,12 @@ function render() {
   var I = INST[ci];
   var h = '';
   h += '<div class="ftit">' + I.titulo + '</div>';
-  h += '<div class="fsub">Preencha a identificação e marque cada resposta. <kbd>S</kbd>=Sim <kbd>N</kbd>=Não <kbd>3</kbd>=3ª opção</div>';
+  h += '<div class="fsub">Entrada manual — só o número do item. <kbd>S</kbd>=SIM <kbd>N</kbd>=NÃO <kbd>0</kbd>/<kbd>Espaço</kbd>=Ñ RES <kbd>3</kbd>=3ª opção especial</div>';
   h += '<div class="ca">';
-  h += '<div class="ci"><strong id="cr">0</strong>Respondidos</div>';
-  h += '<div class="ci"><strong id="cs">0</strong>Sim</div>';
-  h += '<div class="ci"><strong id="cn">0</strong>Não</div>';
+  h += '<div class="ci"><strong id="cr">0</strong>Preenchidos</div>';
+  h += '<div class="ci"><strong id="cs">0</strong>SIM</div>';
+  h += '<div class="ci"><strong id="cn">0</strong>NÃO</div>';
+  h += '<div class="ci"><strong id="cnr">0</strong>Ñ RES</div>';
   h += '<div class="ci"><strong id="ct">0</strong>Total</div>';
   h += '</div>';
 
@@ -567,19 +573,21 @@ function render() {
       var k = 'q' + it.n;
       if (it.tp === '3') {
         h += '<div class="qi" data-key="' + k + '" tabindex="-1">';
-        h += '<span class="qn">' + it.n + '</span><span class="qt">' + it.t + '</span>';
+        h += '<span class="qn">' + it.n + '</span><span class="qt-mini" title="' + it.t.replace(/"/g,'&quot;') + '">' + it.o.map(function(x){return x;}).join(' / ') + '</span>';
         h += '<div class="qo">';
         it.o.forEach(function(lb, i) {
           var c = i===0?'s':(i===1?'n':'t');
           h += '<button class="ob ' + c + '" data-key="' + k + '" data-val="' + it.v[i] + '" onclick="pick(\'' + k + '\',\'' + it.v[i] + '\',this)">' + lb + '</button>';
         });
+        h += '<button class="ob r" data-key="' + k + '" data-val="nao_resp" onclick="pick(\'' + k + '\',\'nao_resp\',this)">Ñ RES</button>';
         h += '</div></div>';
       } else {
         h += '<div class="qi" data-key="' + k + '" tabindex="-1">';
-        h += '<span class="qn">' + it.n + '</span><span class="qt">' + it.t + '</span>';
+        h += '<span class="qn">' + it.n + '</span><span class="qt-sp"></span>';
         h += '<div class="qo">';
-        h += '<button class="ob s" data-key="' + k + '" data-val="true" onclick="pick(\'' + k + '\',true,this)">Sim</button>';
-        h += '<button class="ob n" data-key="' + k + '" data-val="false" onclick="pick(\'' + k + '\',false,this)">Não</button>';
+        h += '<button class="ob s" data-key="' + k + '" data-val="true" onclick="pick(\'' + k + '\',true,this)">SIM</button>';
+        h += '<button class="ob n" data-key="' + k + '" data-val="false" onclick="pick(\'' + k + '\',false,this)">NÃO</button>';
+        h += '<button class="ob r" data-key="' + k + '" data-val="nao_resp" onclick="pick(\'' + k + '\',\'nao_resp\',this)">Ñ RES</button>';
         h += '</div></div>';
       }
     });
@@ -597,6 +605,7 @@ function render() {
       h += '<button class="ob s" data-key="' + k + '" data-val="tem" onclick="pick(\'' + k + '\',\'tem\',this)">Tem</button>';
       h += '<button class="ob n" data-key="' + k + '" data-val="precisa" onclick="pick(\'' + k + '\',\'precisa\',this)">Precisa</button>';
       h += '<button class="ob t" data-key="' + k + '" data-val="nao_precisa" onclick="pick(\'' + k + '\',\'nao_precisa\',this)">Não precisa</button>';
+      h += '<button class="ob r" data-key="' + k + '" data-val="nao_resp" onclick="pick(\'' + k + '\',\'nao_resp\',this)">Ñ RES</button>';
       h += '</div></div>';
     });
     h += '</div>';
@@ -699,6 +708,9 @@ document.addEventListener('keydown', function(e) {
   } else if (e.key === '3') {
     var b = document.querySelector('[data-key="' + k + '"][data-val="nao_sei"],[data-key="' + k + '"][data-val="sonda"],[data-key="' + k + '"][data-val="nao_vai_escola"],[data-key="' + k + '"][data-val="nao_tenho_amigo"],[data-key="' + k + '"][data-val="nao_procurou"],[data-key="' + k + '"][data-val="nao_precisa"]');
     if (b) { pick(k, b.dataset.val, b); e.preventDefault(); }
+  } else if (e.key === '0' || e.key === ' ') {
+    var b = document.querySelector('[data-key="' + k + '"][data-val="nao_resp"]');
+    if (b) { pick(k, b.dataset.val, b); e.preventDefault(); }
   } else if (e.key === 'Tab' && !e.shiftKey) { e.preventDefault(); focusI(fx + 1); }
   else if (e.key === 'Tab' && e.shiftKey) { e.preventDefault(); focusI(fx - 1); }
 });
@@ -708,7 +720,7 @@ document.addEventListener('keydown', function(e) {
 // =====================================================================
 function updC() {
   var I = INST[ci];
-  var tot=0, resp=0, sim=0, nao=0;
+  var tot=0, resp=0, sim=0, nao=0, nres=0;
   I.secoes.forEach(function(sec) {
     sec.itens.forEach(function(it) {
       tot++;
@@ -716,17 +728,20 @@ function updC() {
       if (v !== undefined && v !== null && v !== '') {
         resp++;
         if (v===true||v==='sim'||v==='tem') sim++;
-        if (v===false||v==='nao'||v==='precisa') nao++;
+        else if (v===false||v==='nao'||v==='precisa') nao++;
+        else if (v==='nao_resp') nres++;
       }
     });
   });
   if (I.needs) I.needs.forEach(function(nd) {
     tot++;
-    if (ans['q' + I.nk + nd.s]) resp++;
+    var v = ans['q' + I.nk + nd.s];
+    if (v) { resp++; if (v==='nao_resp') nres++; }
   });
   document.getElementById('cr').textContent = resp;
   document.getElementById('cs').textContent = sim;
   document.getElementById('cn').textContent = nao;
+  document.getElementById('cnr').textContent = nres;
   document.getElementById('ct').textContent = tot;
   var pct = tot > 0 ? Math.round(resp/tot*100) : 0;
   document.getElementById('pbar').style.width = pct + '%';
@@ -752,6 +767,13 @@ async function salvar() {
   if (I.extra) I.extra.forEach(function(f) {
     var el = document.getElementById('ex_' + f.id);
     if (el && f.tp === 'sel') payload[f.id] = el.value || null;
+  });
+
+  // "Ñ RES" (não respondeu no papel) grava NULL no banco.
+  // Como cada questionário é digitado por inteiro, todo NULL num registro
+  // salvo significa "não respondeu" — não existe campo "não digitado".
+  Object.keys(payload).forEach(function(kk) {
+    if (payload[kk] === 'nao_resp') payload[kk] = null;
   });
 
   ldb.push(Object.assign({}, payload, {_table: I.tabela, _at: new Date().toISOString()}));
@@ -1107,7 +1129,7 @@ function limparRow(r) {
   Object.keys(r).forEach(function(k) {
     if (k.startsWith('_')) return;
     var v = r[k];
-    if (v===''||v===null||v===undefined) { out[k]=null; return; }
+    if (v===''||v===null||v===undefined||v==='nao_resp') { out[k]=null; return; }
     if (v==='true')  { out[k]=true;  return; }
     if (v==='false') { out[k]=false; return; }
     if (typeof v==='string'&&v.includes('|')) { out[k]=v.split('|'); return; }
